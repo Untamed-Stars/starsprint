@@ -1,44 +1,104 @@
-/* ==========================================
-   STARSPRINT
+/* =====================================================
+   STARSPRINT v0.2
    Typing Space Racing Game
-========================================== */
+===================================================== */
 
 
-/* ==========================================
+/* =====================================================
    DOM
-========================================== */
+===================================================== */
 
-const startScreen = document.getElementById("startScreen");
-const finishScreen = document.getElementById("finishScreen");
+const galaxyScreen =
+    document.getElementById("galaxyScreen");
 
-const startButton = document.getElementById("startButton");
-const restartButton = document.getElementById("restartButton");
+const raceScreen =
+    document.getElementById("raceScreen");
 
-const typingInput = document.getElementById("typingInput");
-const textDisplay = document.getElementById("textDisplay");
+const resultsScreen =
+    document.getElementById("resultsScreen");
 
-const playerShip = document.getElementById("playerShip");
-const enemyShip = document.getElementById("enemyShip");
+const headerStats =
+    document.getElementById("headerStats");
 
-const countdown = document.getElementById("countdown");
+const launchButton =
+    document.getElementById("launchButton");
 
-const wpmDisplay = document.getElementById("wpm");
-const accuracyDisplay = document.getElementById("accuracy");
-const progressDisplay = document.getElementById("progress");
+const againButton =
+    document.getElementById("againButton");
 
-const charactersDisplay = document.getElementById("characters");
-const errorsDisplay = document.getElementById("errors");
+const mapButton =
+    document.getElementById("mapButton");
 
-const finalWpm = document.getElementById("finalWpm");
-const finalAccuracy = document.getElementById("finalAccuracy");
-const finalTime = document.getElementById("finalTime");
+const typingInput =
+    document.getElementById("typingInput");
 
-const finishTitle = document.getElementById("finishTitle");
+const textDisplay =
+    document.getElementById("textDisplay");
+
+const countdown =
+    document.getElementById("countdown");
+
+const lanes =
+    document.getElementById("lanes");
+
+const space =
+    document.getElementById("space");
+
+const leaderboard =
+    document.getElementById("leaderboard");
 
 
-/* ==========================================
-   TEXT
-========================================== */
+/* stats */
+
+const wpmDisplay =
+    document.getElementById("wpm");
+
+const accuracyDisplay =
+    document.getElementById("accuracy");
+
+const progressDisplay =
+    document.getElementById("progress");
+
+const charactersDisplay =
+    document.getElementById("characters");
+
+const errorsDisplay =
+    document.getElementById("errors");
+
+
+/* sector information */
+
+const sectorLength =
+    document.getElementById("sectorLength");
+
+const sectorDifficulty =
+    document.getElementById("sectorDifficulty");
+
+const sectorReward =
+    document.getElementById("sectorReward");
+
+
+/* results */
+
+const resultTitle =
+    document.getElementById("resultTitle");
+
+const resultIcon =
+    document.getElementById("resultIcon");
+
+const finalWpm =
+    document.getElementById("finalWpm");
+
+const finalAccuracy =
+    document.getElementById("finalAccuracy");
+
+const finalReward =
+    document.getElementById("finalReward");
+
+
+/* =====================================================
+   GAME DATA
+===================================================== */
 
 const passages = [
 
@@ -61,19 +121,171 @@ const passages = [
 ];
 
 
-/* ==========================================
-   GAME VARIABLES
-========================================== */
+/* =====================================================
+   SECTORS
+===================================================== */
+
+const sectors = [
+
+    {
+        name: "ORION GATE",
+
+        difficulty: "BEGINNER",
+
+        length: "SHORT",
+
+        reward: 100,
+
+        aiMin: 25,
+
+        aiMax: 38
+    },
+
+    {
+        name: "ASTEROID RUN",
+
+        difficulty: "INTERMEDIATE",
+
+        length: "MEDIUM",
+
+        reward: 175,
+
+        aiMin: 35,
+
+        aiMax: 50
+    },
+
+    {
+        name: "GIANT'S RING",
+
+        difficulty: "ADVANCED",
+
+        length: "LONG",
+
+        reward: 300,
+
+        aiMin: 45,
+
+        aiMax: 62
+    },
+
+    {
+        name: "VOID EDGE",
+
+        difficulty: "EXTREME",
+
+        length: "EXTREME",
+
+        reward: 500,
+
+        aiMin: 55,
+
+        aiMax: 75
+    }
+
+];
+
+
+let selectedSector = 0;
+
+
+/* =====================================================
+   AI DATA
+===================================================== */
+
+const aiProfiles = [
+
+    {
+        name: "NOVA",
+
+        ship: "SCOUT",
+
+        skill: "cadet"
+    },
+
+    {
+        name: "KESTREL",
+
+        ship: "INTERCEPTOR",
+
+        skill: "pilot"
+    },
+
+    {
+        name: "VEX",
+
+        ship: "EXPLORER",
+
+        skill: "pilot"
+    },
+
+    {
+        name: "ORBIT",
+
+        ship: "RANGER",
+
+        skill: "ace"
+    }
+
+];
+
+
+/*
+    AI skill modifiers.
+
+    These are NOT fixed movement speeds.
+
+    WPM is converted into typing progress.
+*/
+
+const aiSkill = {
+
+    cadet: {
+
+        accuracy: [88, 94],
+
+        reaction: [500, 850],
+
+        consistency: 0.25
+
+    },
+
+    pilot: {
+
+        accuracy: [92, 97],
+
+        reaction: [350, 600],
+
+        consistency: 0.14
+
+    },
+
+    ace: {
+
+        accuracy: [96, 99],
+
+        reaction: [250, 450],
+
+        consistency: 0.08
+
+    }
+
+};
+
+
+/* =====================================================
+   GAME STATE
+===================================================== */
 
 let currentText = "";
 
 let currentIndex = 0;
 
-let errors = 0;
-
 let totalTyped = 0;
 
 let correctTyped = 0;
+
+let errors = 0;
 
 let raceStarted = false;
 
@@ -81,56 +293,144 @@ let raceFinished = false;
 
 let startTime = 0;
 
-let timerInterval = null;
+let raceTimer = null;
 
-let enemyProgress = 0;
+let aiTimer = null;
 
-let playerProgress = 0;
+let playerShip = null;
 
-let enemySpeed = 0;
+let aiRacers = [];
 
 
-/* ==========================================
-   RANDOM TEXT
-========================================== */
+/* =====================================================
+   UTILITY
+===================================================== */
 
-function getRandomText() {
+function random(min, max) {
 
-    const index = Math.floor(
-        Math.random() * passages.length
-    );
-
-    return passages[index];
+    return Math.random() * (max - min) + min;
 
 }
 
 
-/* ==========================================
-   PREPARE TEXT
-========================================== */
+function randomInt(min, max) {
+
+    return Math.floor(
+        random(min, max + 1)
+    );
+
+}
+
+
+function choose(array) {
+
+    return array[
+        Math.floor(
+            Math.random() * array.length
+        )
+    ];
+
+}
+
+
+/* =====================================================
+   SECTOR SELECTION
+===================================================== */
+
+const sectorButtons =
+    document.querySelectorAll(".sector");
+
+
+sectorButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        const index =
+            Number(button.dataset.sector);
+
+        if (index > 1) {
+            return;
+        }
+
+        selectedSector = index;
+
+        sectorButtons.forEach(btn => {
+
+            btn.classList.remove("selected");
+
+        });
+
+        button.classList.add("selected");
+
+        updateSectorInfo();
+
+    });
+
+});
+
+
+function updateSectorInfo() {
+
+    const sector =
+        sectors[selectedSector];
+
+    sectorLength.textContent =
+        sector.length;
+
+    sectorDifficulty.textContent =
+        sector.difficulty;
+
+    sectorReward.textContent =
+        `${sector.reward} CR`;
+
+}
+
+
+updateSectorInfo();
+
+
+/* =====================================================
+   TEXT
+===================================================== */
+
+function getPassage() {
+
+    return choose(passages);
+
+}
+
 
 function prepareText() {
 
-    currentText = getRandomText();
+    currentText =
+        getPassage();
 
     currentIndex = 0;
-
-    errors = 0;
 
     totalTyped = 0;
 
     correctTyped = 0;
 
+    errors = 0;
+
     textDisplay.innerHTML = "";
 
-    for (let i = 0; i < currentText.length; i++) {
+    for (
+        let i = 0;
+        i < currentText.length;
+        i++
+    ) {
 
-        const span = document.createElement("span");
+        const span =
+            document.createElement("span");
 
-        span.textContent = currentText[i];
+        span.textContent =
+            currentText[i];
 
         if (i === 0) {
+
             span.classList.add("current");
+
         }
 
         textDisplay.appendChild(span);
@@ -142,137 +442,449 @@ function prepareText() {
 }
 
 
-/* ==========================================
+/* =====================================================
+   CREATE LANES
+===================================================== */
+
+function createLanes() {
+
+    lanes.innerHTML = "";
+
+    for (let i = 0; i < 5; i++) {
+
+        const lane =
+            document.createElement("div");
+
+        lane.className =
+            "lane";
+
+        lanes.appendChild(lane);
+
+    }
+
+}
+
+
+/* =====================================================
+   CREATE SHIP
+===================================================== */
+
+function createShip(
+    name,
+    type,
+    lane,
+    isAI = false
+) {
+
+    const ship =
+        document.createElement("div");
+
+    ship.className =
+        `ship ${isAI ? "ai" : "player"}`;
+
+    ship.style.top =
+        `${lane}%`;
+
+    const body =
+        document.createElement("div");
+
+    body.className =
+        "ship-body";
+
+    const wingLeft =
+        document.createElement("div");
+
+    wingLeft.className =
+        "ship-wing left";
+
+    const wingRight =
+        document.createElement("div");
+
+    wingRight.className =
+        "ship-wing right";
+
+    const engine =
+        document.createElement("div");
+
+    engine.className =
+        "ship-engine";
+
+    const label =
+        document.createElement("div");
+
+    label.className =
+        "ship-label";
+
+    label.textContent =
+        `${name} • ${type}`;
+
+    ship.appendChild(body);
+
+    ship.appendChild(wingLeft);
+
+    ship.appendChild(wingRight);
+
+    ship.appendChild(engine);
+
+    ship.appendChild(label);
+
+    space.appendChild(ship);
+
+    return ship;
+
+}
+
+
+/* =====================================================
+   CREATE RACERS
+===================================================== */
+
+function createRacers() {
+
+    document
+        .querySelectorAll(".ship")
+        .forEach(ship => ship.remove());
+
+    playerShip =
+        createShip(
+            "YOU",
+            "STARLING",
+            10,
+            false
+        );
+
+
+    aiRacers = [];
+
+
+    const sector =
+        sectors[selectedSector];
+
+
+    aiProfiles.forEach(
+        (profile, index) => {
+
+            const settings =
+                aiSkill[profile.skill];
+
+            let wpm =
+                random(
+                    sector.aiMin,
+                    sector.aiMax
+                );
+
+
+            /*
+                Skill adjusts how far inside
+                the sector's WPM range they sit.
+            */
+
+            if (profile.skill === "cadet") {
+
+                wpm *= 0.88;
+
+            }
+
+            if (profile.skill === "ace") {
+
+                wpm *= 1.08;
+
+            }
+
+
+            wpm = Math.round(wpm);
+
+
+            const accuracy =
+                randomInt(
+                    settings.accuracy[0],
+                    settings.accuracy[1]
+                );
+
+
+            const reaction =
+                random(
+                    settings.reaction[0],
+                    settings.reaction[1]
+                );
+
+
+            const ai = {
+
+                name: profile.name,
+
+                ship: profile.ship,
+
+                skill: profile.skill,
+
+                wpm: wpm,
+
+                accuracy: accuracy,
+
+                reaction: reaction,
+
+                consistency:
+                    settings.consistency,
+
+                progress: 0,
+
+                typed: 0,
+
+                correct: 0,
+
+                errors: 0,
+
+                nextType: 0,
+
+                finished: false,
+
+                element:
+                    createShip(
+                        profile.name,
+                        profile.ship,
+                        30 + index * 20,
+                        true
+                    )
+
+            };
+
+
+            aiRacers.push(ai);
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   RESET SHIPS
+===================================================== */
+
+function resetShipPositions() {
+
+    if (playerShip) {
+
+        playerShip.style.left =
+            "20px";
+
+    }
+
+    aiRacers.forEach(ai => {
+
+        ai.progress = 0;
+
+        ai.typed = 0;
+
+        ai.correct = 0;
+
+        ai.errors = 0;
+
+        ai.finished = false;
+
+        ai.element.style.left =
+            "20px";
+
+    });
+
+}
+
+
+/* =====================================================
    START RACE
-========================================== */
+===================================================== */
+
+launchButton.addEventListener(
+    "click",
+    startRace
+);
+
 
 function startRace() {
 
-    startScreen.classList.add("hidden");
+    galaxyScreen.classList.add(
+        "hidden"
+    );
 
-    finishScreen.classList.add("hidden");
+    resultsScreen.classList.add(
+        "hidden"
+    );
 
-    typingInput.value = "";
+    raceScreen.classList.remove(
+        "hidden"
+    );
+
+    headerStats.classList.remove(
+        "hidden"
+    );
+
 
     prepareText();
 
-    playerProgress = 0;
+    createLanes();
 
-    enemyProgress = 0;
+    createRacers();
 
-    enemyShip.style.left = "20px";
+    resetShipPositions();
 
-    playerShip.style.left = "20px";
 
     raceStarted = false;
 
     raceFinished = false;
 
+
+    typingInput.value = "";
+
+    typingInput.disabled = true;
+
+
     countdown.textContent = "3";
 
-    let count = 3;
 
-    const countdownTimer = setInterval(() => {
-
-        count--;
-
-        if (count > 0) {
-
-            countdown.textContent = count;
-
-        } else if (count === 0) {
-
-            countdown.textContent = "GO!";
-
-            raceStarted = true;
-
-            startTime = Date.now();
-
-            typingInput.disabled = false;
-
-            typingInput.focus();
-
-            startTimer();
-
-            startEnemy();
-
-        } else {
-
-            clearInterval(countdownTimer);
-
-            countdown.textContent = "";
-
-        }
-
-    }, 1000);
-
-}
+    let number = 3;
 
 
-/* ==========================================
-   TIMER
-========================================== */
+    const timer =
+        setInterval(() => {
 
-function startTimer() {
+            number--;
 
-    clearInterval(timerInterval);
 
-    timerInterval = setInterval(() => {
+            if (number > 0) {
 
-        if (!raceStarted || raceFinished) {
-            return;
-        }
+                countdown.textContent =
+                    number;
 
-        updateStats();
+            }
 
-    }, 200);
+            else if (number === 0) {
+
+                countdown.textContent =
+                    "GO!";
+
+                beginRace();
+
+            }
+
+            else {
+
+                clearInterval(timer);
+
+                countdown.textContent =
+                    "";
+
+            }
+
+        }, 1000);
 
 }
 
 
-/* ==========================================
-   TYPING
-========================================== */
+/* =====================================================
+   BEGIN
+===================================================== */
 
-typingInput.addEventListener("input", function () {
+function beginRace() {
 
-    if (!raceStarted || raceFinished) {
+    raceStarted = true;
+
+    raceFinished = false;
+
+    startTime =
+        Date.now();
+
+
+    typingInput.disabled =
+        false;
+
+    typingInput.focus();
+
+
+    raceTimer =
+        setInterval(
+            updateStats,
+            100
+        );
+
+
+    startAI();
+
+}
+
+
+/* =====================================================
+   PLAYER TYPING
+===================================================== */
+
+typingInput.addEventListener(
+    "input",
+    handleTyping
+);
+
+
+function handleTyping() {
+
+    if (
+        !raceStarted ||
+        raceFinished
+    ) {
+
         return;
+
     }
 
-    const value = typingInput.value;
 
-    if (value.length === 0) {
+    const value =
+        typingInput.value;
+
+
+    if (!value.length) {
+
         return;
+
     }
 
-    const typedCharacter = value[value.length - 1];
 
-    const expectedCharacter = currentText[currentIndex];
+    const character =
+        value[value.length - 1];
+
+    const expected =
+        currentText[currentIndex];
+
 
     totalTyped++;
 
-    if (typedCharacter === expectedCharacter) {
+
+    if (
+        character === expected
+    ) {
 
         correctTyped++;
 
         currentIndex++;
 
-        updateTextDisplay();
-
         typingInput.value = "";
+
+        updateTextDisplay();
 
         movePlayer();
 
         updateStats();
 
-        if (currentIndex >= currentText.length) {
+
+        if (
+            currentIndex >=
+            currentText.length
+        ) {
 
             finishRace(true);
 
         }
 
-    } else {
+    }
+
+    else {
 
         errors++;
 
@@ -282,42 +894,52 @@ typingInput.addEventListener("input", function () {
 
         updateStats();
 
-        typingInput.classList.add("error");
-
-        setTimeout(() => {
-
-            typingInput.classList.remove("error");
-
-        }, 150);
-
     }
 
-});
+}
 
 
-/* ==========================================
-   DISPLAY TEXT
-========================================== */
+/* =====================================================
+   TEXT DISPLAY
+===================================================== */
 
 function updateTextDisplay() {
 
-    const letters = textDisplay.children;
+    const letters =
+        textDisplay.children;
 
-    for (let i = 0; i < letters.length; i++) {
 
-        letters[i].classList.remove(
-            "correct",
-            "current",
-            "wrong"
-        );
+    for (
+        let i = 0;
+        i < letters.length;
+        i++
+    ) {
 
-        if (i < currentIndex) {
+        letters[i]
+            .classList
+            .remove(
+                "correct",
+                "current"
+            );
 
-            letters[i].classList.add("correct");
 
-        } else if (i === currentIndex) {
+        if (
+            i < currentIndex
+        ) {
 
-            letters[i].classList.add("current");
+            letters[i]
+                .classList
+                .add("correct");
+
+        }
+
+        else if (
+            i === currentIndex
+        ) {
+
+            letters[i]
+                .classList
+                .add("current");
 
         }
 
@@ -326,25 +948,39 @@ function updateTextDisplay() {
 }
 
 
-/* ==========================================
+/* =====================================================
    PLAYER MOVEMENT
-========================================== */
+===================================================== */
 
 function movePlayer() {
 
-    const spaceWidth =
-        document.getElementById("space").clientWidth;
+    if (!playerShip) {
+        return;
+    }
 
-    const shipWidth = 80;
 
-    const maxPosition =
-        spaceWidth - shipWidth - 40;
+    const width =
+        space.clientWidth;
 
-    playerProgress =
-        currentIndex / currentText.length;
+
+    const shipWidth = 76;
+
+    const max =
+        width -
+        shipWidth -
+        35;
+
+
+    const progress =
+        currentIndex /
+        currentText.length;
+
 
     const position =
-        20 + (maxPosition - 20) * playerProgress;
+        20 +
+        (max - 20) *
+        progress;
+
 
     playerShip.style.left =
         `${position}px`;
@@ -352,131 +988,93 @@ function movePlayer() {
 }
 
 
-/* ==========================================
-   ENEMY
-========================================== */
+/* =====================================================
+   WPM
+===================================================== */
 
-function startEnemy() {
-
-    enemyProgress = 0;
-
-    /*
-        Enemy speed is randomized slightly
-        every race.
-    */
-
-    enemySpeed =
-        0.0015 +
-        Math.random() * 0.0007;
-
-    requestAnimationFrame(enemyLoop);
-
-}
-
-
-function enemyLoop() {
-
-    if (!raceStarted || raceFinished) {
-        return;
-    }
-
-    enemyProgress += enemySpeed;
-
-    if (enemyProgress >= 1) {
-
-        enemyProgress = 1;
-
-        finishRace(false);
-
-        return;
-
-    }
-
-    moveEnemy();
-
-    requestAnimationFrame(enemyLoop);
-
-}
-
-
-function moveEnemy() {
-
-    const spaceWidth =
-        document.getElementById("space").clientWidth;
-
-    const shipWidth = 80;
-
-    const maxPosition =
-        spaceWidth - shipWidth - 40;
-
-    const position =
-        20 + (maxPosition - 20) * enemyProgress;
-
-    enemyShip.style.left =
-        `${position}px`;
-
-}
-
-
-/* ==========================================
-   STATISTICS
-========================================== */
-
-function calculateWPM() {
+function getPlayerWPM() {
 
     if (!startTime) {
         return 0;
     }
 
-    const elapsedMinutes =
-        (Date.now() - startTime) / 60000;
 
-    if (elapsedMinutes <= 0) {
+    const minutes =
+        (Date.now() - startTime)
+        / 60000;
+
+
+    if (minutes <= 0) {
         return 0;
     }
 
+
     return Math.round(
-        (correctTyped / 5) /
-        elapsedMinutes
+        (correctTyped / 5)
+        / minutes
     );
 
 }
 
 
-function calculateAccuracy() {
+/* =====================================================
+   ACCURACY
+===================================================== */
+
+function getPlayerAccuracy() {
 
     if (totalTyped === 0) {
         return 100;
     }
 
+
     return Math.round(
-        (correctTyped / totalTyped) * 100
+        (correctTyped /
+            totalTyped) *
+        100
     );
 
 }
 
 
+/* =====================================================
+   STATS
+===================================================== */
+
 function updateStats() {
 
-    const wpm = calculateWPM();
+    const wpm =
+        getPlayerWPM();
 
-    const accuracy = calculateAccuracy();
+
+    const accuracy =
+        getPlayerAccuracy();
+
 
     const progress =
         Math.round(
-            (currentIndex / currentText.length) * 100
+            (
+                currentIndex /
+                currentText.length
+            ) * 100
         );
 
-    wpmDisplay.textContent = wpm;
+
+    wpmDisplay.textContent =
+        wpm;
+
 
     accuracyDisplay.textContent =
         `${accuracy}%`;
 
+
     progressDisplay.textContent =
         `${progress}%`;
 
+
     charactersDisplay.textContent =
         `${currentIndex} / ${currentText.length}`;
+
 
     errorsDisplay.textContent =
         errors;
@@ -484,9 +1082,245 @@ function updateStats() {
 }
 
 
-/* ==========================================
-   FINISH
-========================================== */
+/* =====================================================
+   AI ENGINE
+===================================================== */
+
+
+/*
+    Convert WPM into milliseconds per character.
+
+    1 word = roughly 5 characters.
+
+    Example:
+
+    40 WPM
+    = 200 characters/minute
+    = 3.33 characters/second
+*/
+
+function characterDelay(wpm) {
+
+    const charactersPerSecond =
+        (wpm * 5) / 60;
+
+
+    return (
+        1000 /
+        charactersPerSecond
+    );
+
+}
+
+
+/* =====================================================
+   START AI
+===================================================== */
+
+function startAI() {
+
+    aiRacers.forEach(ai => {
+
+        ai.nextType =
+            Date.now() +
+            ai.reaction;
+
+    });
+
+
+    aiLoop();
+
+}
+
+
+/* =====================================================
+   AI LOOP
+===================================================== */
+
+function aiLoop() {
+
+    if (
+        raceFinished ||
+        !raceStarted
+    ) {
+
+        return;
+
+    }
+
+
+    const now =
+        Date.now();
+
+
+    aiRacers.forEach(ai => {
+
+        if (ai.finished) {
+            return;
+        }
+
+
+        if (
+            now <
+            ai.nextType
+        ) {
+
+            return;
+
+        }
+
+
+        simulateAICharacter(ai);
+
+
+        const baseDelay =
+            characterDelay(
+                ai.wpm
+            );
+
+
+        /*
+            Humans don't type at exactly
+            the same interval forever.
+
+            Add random variation.
+        */
+
+        const variation =
+            random(
+                1 - ai.consistency,
+                1 + ai.consistency
+            );
+
+
+        ai.nextType =
+            now +
+            baseDelay *
+            variation;
+
+    });
+
+
+    aiTimer =
+        requestAnimationFrame(
+            aiLoop
+        );
+
+}
+
+
+/* =====================================================
+   SIMULATE CHARACTER
+===================================================== */
+
+function simulateAICharacter(ai) {
+
+    if (
+        ai.typed >=
+        currentText.length
+    ) {
+
+        ai.finished = true;
+
+        return;
+
+    }
+
+
+    ai.typed++;
+
+
+    const accuracyRoll =
+        Math.random() * 100;
+
+
+    if (
+        accuracyRoll <=
+        ai.accuracy
+    ) {
+
+        ai.correct++;
+
+    }
+
+    else {
+
+        ai.errors++;
+
+    }
+
+
+    ai.progress =
+        ai.correct /
+        currentText.length;
+
+
+    moveAI(ai);
+
+
+    if (
+        ai.correct >=
+        currentText.length
+    ) {
+
+        ai.finished = true;
+
+        checkAIWin(ai);
+
+    }
+
+}
+
+
+/* =====================================================
+   AI MOVEMENT
+===================================================== */
+
+function moveAI(ai) {
+
+    const width =
+        space.clientWidth;
+
+
+    const shipWidth = 76;
+
+    const max =
+        width -
+        shipWidth -
+        35;
+
+
+    const position =
+        20 +
+        (max - 20) *
+        ai.progress;
+
+
+    ai.element.style.left =
+        `${position}px`;
+
+}
+
+
+/* =====================================================
+   AI WIN CHECK
+===================================================== */
+
+function checkAIWin(ai) {
+
+    if (raceFinished) {
+        return;
+    }
+
+
+    finishRace(false);
+
+}
+
+
+/* =====================================================
+   FINISH RACE
+===================================================== */
 
 function finishRace(playerWon) {
 
@@ -494,95 +1328,305 @@ function finishRace(playerWon) {
         return;
     }
 
+
     raceFinished = true;
 
     raceStarted = false;
 
-    clearInterval(timerInterval);
 
-    typingInput.disabled = true;
+    clearInterval(
+        raceTimer
+    );
 
-    const elapsedSeconds =
-        Math.round(
-            (Date.now() - startTime) / 1000
-        );
 
-    const wpm = calculateWPM();
+    cancelAnimationFrame(
+        aiTimer
+    );
 
-    const accuracy = calculateAccuracy();
 
-    if (playerWon) {
+    typingInput.disabled =
+        true;
 
-        finishTitle.textContent =
-            "RACE COMPLETE";
 
-    } else {
+    const playerProgress =
+        currentIndex /
+        currentText.length;
 
-        finishTitle.textContent =
-            "YOU LOST";
 
-    }
+    /*
+        Freeze everyone and calculate
+        the final ranking.
+    */
 
-    finalWpm.textContent =
-        wpm;
+    const racers = [];
 
-    finalAccuracy.textContent =
-        `${accuracy}%`;
 
-    finalTime.textContent =
-        `${elapsedSeconds}s`;
+    racers.push({
 
-    finishScreen.classList.remove("hidden");
+        name: "YOU",
+
+        wpm:
+            getPlayerWPM(),
+
+        progress:
+            playerProgress,
+
+        player: true
+
+    });
+
+
+    aiRacers.forEach(ai => {
+
+        racers.push({
+
+            name: ai.name,
+
+            wpm: ai.wpm,
+
+            progress: ai.progress,
+
+            player: false
+
+        });
+
+    });
+
+
+    racers.sort(
+        (a, b) =>
+            b.progress -
+            a.progress
+    );
+
+
+    showResults(
+        racers,
+        playerWon
+    );
 
 }
 
 
-/* ==========================================
-   BUTTONS
-========================================== */
+/* =====================================================
+   RESULTS
+===================================================== */
 
-startButton.addEventListener(
-    "click",
-    startRace
-);
+function showResults(
+    racers,
+    playerWon
+) {
 
-restartButton.addEventListener(
-    "click",
-    startRace
-);
+    const playerPosition =
+        racers.findIndex(
+            racer =>
+                racer.player
+        ) + 1;
 
 
-/* ==========================================
-   CLICK TYPING AREA
-========================================== */
+    if (playerWon) {
 
-document.addEventListener("click", () => {
+        resultTitle.textContent =
+            "VICTORY";
 
-    if (
-        raceStarted &&
-        !raceFinished &&
-        !typingInput.disabled
-    ) {
-
-        typingInput.focus();
+        resultIcon.textContent =
+            "★";
 
     }
 
-});
+    else {
+
+        resultTitle.textContent =
+            `POSITION ${playerPosition}`;
+
+        resultIcon.textContent =
+            "✦";
+
+    }
 
 
-/* ==========================================
+    leaderboard.innerHTML = "";
+
+
+    racers.forEach(
+        (racer, index) => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "result-row";
+
+
+            if (racer.player) {
+
+                row.classList.add(
+                    "player"
+                );
+
+            }
+
+
+            row.innerHTML = `
+
+                <div class="result-position">
+                    ${index + 1}
+                </div>
+
+                <div class="result-name">
+                    ${racer.name}
+                </div>
+
+                <div class="result-wpm">
+                    ${racer.player
+                        ? racer.wpm
+                        : racer.wpm} WPM
+                </div>
+
+            `;
+
+
+            leaderboard.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    const wpm =
+        getPlayerWPM();
+
+
+    const accuracy =
+        getPlayerAccuracy();
+
+
+    const sector =
+        sectors[selectedSector];
+
+
+    let reward = 0;
+
+
+    if (playerPosition === 1) {
+
+        reward =
+            sector.reward;
+
+    }
+
+    else if (
+        playerPosition === 2
+    ) {
+
+        reward =
+            Math.round(
+                sector.reward * 0.65
+            );
+
+    }
+
+    else if (
+        playerPosition === 3
+    ) {
+
+        reward =
+            Math.round(
+                sector.reward * 0.4
+            );
+
+    }
+
+
+    finalWpm.textContent =
+        wpm;
+
+
+    finalAccuracy.textContent =
+        `${accuracy}%`;
+
+
+    finalReward.textContent =
+        `${reward} CR`;
+
+
+    resultsScreen.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+againButton.addEventListener(
+    "click",
+    () => {
+
+        resultsScreen.classList.add(
+            "hidden"
+        );
+
+        startRace();
+
+    }
+);
+
+
+mapButton.addEventListener(
+    "click",
+    () => {
+
+        resultsScreen.classList.add(
+            "hidden"
+        );
+
+        raceScreen.classList.add(
+            "hidden"
+        );
+
+        headerStats.classList.add(
+            "hidden"
+        );
+
+        galaxyScreen.classList.remove(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   CLICK TO FOCUS
+===================================================== */
+
+document.addEventListener(
+    "click",
+    () => {
+
+        if (
+            raceStarted &&
+            !raceFinished &&
+            !typingInput.disabled
+        ) {
+
+            typingInput.focus();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
    INITIALIZE
-========================================== */
+===================================================== */
 
-prepareText();
-
-wpmDisplay.textContent = "0";
-
-accuracyDisplay.textContent = "100%";
-
-progressDisplay.textContent = "0%";
-
-charactersDisplay.textContent = "0 / 0";
-
-errorsDisplay.textContent = "0";
+updateSectorInfo();
