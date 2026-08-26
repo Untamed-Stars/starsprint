@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>StarSprint</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="game">
+
+        <!-- TOP BAR -->
+        <header>
+            <div class="logo">
+                <span>✦</span> STARSPRINT
+            </div>
+
+            <div class="stats">
+                <div>
+                    <small>WPM</small>
+                    <strong id="wpm">0</strong>
+                </div>
+
+                <div>
+                    <small>ACCURACY</small>
+                    <strong id="accuracy">100%</strong>
+                </div>
+
+                <div>
+                    <small>PROGRESS</small>
+                    <strong id="progress">0%</strong>
+                </div>
+            </div>
+        </header>
+
+
+        <!-- SPACE -->
+        <main>
+
+            <div id="space">
+
+                <div class="stars"></div>
+
+                <div class="planet planet1"></div>
+                <div class="planet planet2"></div>
+
+                <div class="asteroid asteroid1"></div>
+                <div class="asteroid asteroid2"></div>
+                <div class="asteroid asteroid3"></div>
+
+                <!-- PLAYER -->
+                <div id="playerShip" class="ship">
+                    <div class="ship-body"></div>
+                    <div class="ship-wing left"></div>
+                    <div class="ship-wing right"></div>
+                    <div class="engine"></div>
+                </div>
+
+                <!-- AI -->
+                <div id="enemyShip" class="ship enemy">
+                    <div class="ship-body"></div>
+                    <div class="ship-wing left"></div>
+                    <div class="ship-wing right"></div>
+                    <div class="engine"></div>
+                </div>
+
+                <!-- FINISH LINE -->
+                <div id="finishLine"></div>
+
+            </div>
+
+
+            <!-- COUNTDOWN -->
+            <div id="countdown">
+                3
+            </div>
+
+
+            <!-- TYPING AREA -->
+            <section id="typingArea">
+
+                <div id="textDisplay"></div>
+
+                <input
+                    id="typingInput"
+                    type="text"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    disabled
+                >
+
+                <div class="typingInfo">
+                    <span>
+                        CHARACTERS:
+                        <b id="characters">0 / 0</b>
+                    </span>
+
+                    <span>
+                        ERRORS:
+                        <b id="errors">0</b>
+                    </span>
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- START SCREEN -->
+        <div id="startScreen" class="overlay">
+
+            <div class="panel">
+
+                <div class="bigLogo">
+                    ✦
+                </div>
+
+                <h1>STARSPRINT</h1>
+
+                <p>
+                    Type your way across the galaxy.
+                </p>
+
+                <button id="startButton">
+                    LAUNCH RACE
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- FINISH SCREEN -->
+        <div id="finishScreen" class="overlay hidden">
+
+            <div class="panel">
+
+                <div class="bigLogo">
+                    ★
+                </div>
+
+                <h1 id="finishTitle">
+                    RACE COMPLETE
+                </h1>
+
+                <div class="results">
+
+                    <div>
+                        <span>WPM</span>
+                        <strong id="finalWpm">0</strong>
+                    </div>
+
+                    <div>
+                        <span>ACCURACY</span>
+                        <strong id="finalAccuracy">100%</strong>
+                    </div>
+
+                    <div>
+                        <span>TIME</span>
+                        <strong id="finalTime">0s</strong>
+                    </div>
+
+                </div>
+
+                <button id="restartButton">
+                    RACE AGAIN
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
