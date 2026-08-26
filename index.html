@@ -3,182 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>StarSprint</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div id="game">
+<div id="game">
 
-        <!-- TOP BAR -->
-        <header>
-            <div class="logo">
-                <span>✦</span> STARSPRINT
+    <!-- ================= HEADER ================= -->
+
+    <header>
+        <div class="logo">
+            ✦ STARSPRINT
+        </div>
+
+        <div id="headerStats" class="header-stats hidden">
+            <div>
+                <small>WPM</small>
+                <strong id="wpm">0</strong>
             </div>
 
-            <div class="stats">
-                <div>
-                    <small>WPM</small>
-                    <strong id="wpm">0</strong>
-                </div>
-
-                <div>
-                    <small>ACCURACY</small>
-                    <strong id="accuracy">100%</strong>
-                </div>
-
-                <div>
-                    <small>PROGRESS</small>
-                    <strong id="progress">0%</strong>
-                </div>
-            </div>
-        </header>
-
-
-        <!-- SPACE -->
-        <main>
-
-            <div id="space">
-
-                <div class="stars"></div>
-
-                <div class="planet planet1"></div>
-                <div class="planet planet2"></div>
-
-                <div class="asteroid asteroid1"></div>
-                <div class="asteroid asteroid2"></div>
-                <div class="asteroid asteroid3"></div>
-
-                <!-- PLAYER -->
-                <div id="playerShip" class="ship">
-                    <div class="ship-body"></div>
-                    <div class="ship-wing left"></div>
-                    <div class="ship-wing right"></div>
-                    <div class="engine"></div>
-                </div>
-
-                <!-- AI -->
-                <div id="enemyShip" class="ship enemy">
-                    <div class="ship-body"></div>
-                    <div class="ship-wing left"></div>
-                    <div class="ship-wing right"></div>
-                    <div class="engine"></div>
-                </div>
-
-                <!-- FINISH LINE -->
-                <div id="finishLine"></div>
-
+            <div>
+                <small>ACCURACY</small>
+                <strong id="accuracy">100%</strong>
             </div>
 
+            <div>
+                <small>PROGRESS</small>
+                <strong id="progress">0%</strong>
+            </div>
+        </div>
+    </header>
 
-            <!-- COUNTDOWN -->
-            <div id="countdown">
-                3
+
+    <!-- ================= GALAXY MAP ================= -->
+
+    <section id="galaxyScreen">
+
+        <div class="galaxy-bg"></div>
+
+        <div class="galaxy-content">
+
+            <div class="title-small">
+                STARSPRINT NETWORK
             </div>
 
+            <h1>SELECT A SECTOR</h1>
 
-            <!-- TYPING AREA -->
-            <section id="typingArea">
+            <p class="subtitle">
+                Choose your destination.
+            </p>
 
-                <div id="textDisplay"></div>
+            <div class="sector-grid">
 
-                <input
-                    id="typingInput"
-                    type="text"
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="false"
-                    disabled
-                >
+                <button class="sector selected" data-sector="0">
+                    <div class="sector-icon">🌌</div>
+                    <strong>ORION GATE</strong>
+                    <span>Beginner</span>
+                </button>
 
-                <div class="typingInfo">
-                    <span>
-                        CHARACTERS:
-                        <b id="characters">0 / 0</b>
-                    </span>
+                <button class="sector" data-sector="1">
+                    <div class="sector-icon">☄️</div>
+                    <strong>ASTEROID RUN</strong>
+                    <span>Intermediate</span>
+                </button>
 
-                    <span>
-                        ERRORS:
-                        <b id="errors">0</b>
-                    </span>
-                </div>
+                <button class="sector locked" data-sector="2">
+                    <div class="sector-icon">🪐</div>
+                    <strong>GIANT'S RING</strong>
+                    <span>Locked</span>
+                </button>
 
-            </section>
-
-        </main>
-
-
-        <!-- START SCREEN -->
-        <div id="startScreen" class="overlay">
-
-            <div class="panel">
-
-                <div class="bigLogo">
-                    ✦
-                </div>
-
-                <h1>STARSPRINT</h1>
-
-                <p>
-                    Type your way across the galaxy.
-                </p>
-
-                <button id="startButton">
-                    LAUNCH RACE
+                <button class="sector locked" data-sector="3">
+                    <div class="sector-icon">🕳️</div>
+                    <strong>VOID EDGE</strong>
+                    <span>Locked</span>
                 </button>
 
             </div>
 
+            <div class="sector-info">
+                <div>
+                    <span>RACE LENGTH</span>
+                    <b id="sectorLength">SHORT</b>
+                </div>
+
+                <div>
+                    <span>AI LEVEL</span>
+                    <b id="sectorDifficulty">BEGINNER</b>
+                </div>
+
+                <div>
+                    <span>REWARD</span>
+                    <b id="sectorReward">100 CR</b>
+                </div>
+            </div>
+
+            <button id="launchButton" class="main-button">
+                LAUNCH RACE
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= RACE ================= -->
+
+    <section id="raceScreen" class="hidden">
+
+        <div id="space">
+
+            <div class="stars"></div>
+
+            <div class="planet planet-one"></div>
+            <div class="planet planet-two"></div>
+
+            <div class="asteroid asteroid-one"></div>
+            <div class="asteroid asteroid-two"></div>
+            <div class="asteroid asteroid-three"></div>
+            <div class="asteroid asteroid-four"></div>
+
+            <div id="finishLine"></div>
+
+            <!-- LANES -->
+            <div id="lanes"></div>
+
+            <!-- SHIPS ARE INSERTED HERE -->
+
         </div>
 
 
-        <!-- FINISH SCREEN -->
-        <div id="finishScreen" class="overlay hidden">
+        <!-- COUNTDOWN -->
 
-            <div class="panel">
+        <div id="countdown"></div>
 
-                <div class="bigLogo">
-                    ★
-                </div>
 
-                <h1 id="finishTitle">
-                    RACE COMPLETE
-                </h1>
+        <!-- TYPING -->
 
-                <div class="results">
+        <section id="typingArea">
 
-                    <div>
-                        <span>WPM</span>
-                        <strong id="finalWpm">0</strong>
-                    </div>
+            <div id="textDisplay"></div>
 
-                    <div>
-                        <span>ACCURACY</span>
-                        <strong id="finalAccuracy">100%</strong>
-                    </div>
+            <input
+                id="typingInput"
+                type="text"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                disabled
+            >
 
-                    <div>
-                        <span>TIME</span>
-                        <strong id="finalTime">0s</strong>
-                    </div>
+            <div class="typing-info">
 
-                </div>
+                <span>
+                    CHARACTERS:
+                    <b id="characters">0 / 0</b>
+                </span>
 
-                <button id="restartButton">
-                    RACE AGAIN
-                </button>
+                <span>
+                    ERRORS:
+                    <b id="errors">0</b>
+                </span>
 
             </div>
 
+        </section>
+
+    </section>
+
+
+    <!-- ================= RESULTS ================= -->
+
+    <section id="resultsScreen" class="overlay hidden">
+
+        <div class="results-panel">
+
+            <div class="result-icon" id="resultIcon">
+                ★
+            </div>
+
+            <div class="title-small">
+                RACE RESULTS
+            </div>
+
+            <h1 id="resultTitle">
+                VICTORY
+            </h1>
+
+            <div id="leaderboard"></div>
+
+            <div class="personal-results">
+
+                <div>
+                    <span>WPM</span>
+                    <strong id="finalWpm">0</strong>
+                </div>
+
+                <div>
+                    <span>ACCURACY</span>
+                    <strong id="finalAccuracy">100%</strong>
+                </div>
+
+                <div>
+                    <span>REWARD</span>
+                    <strong id="finalReward">0 CR</strong>
+                </div>
+
+            </div>
+
+            <button id="againButton" class="main-button">
+                RACE AGAIN
+            </button>
+
+            <button id="mapButton" class="secondary-button">
+                GALAXY MAP
+            </button>
+
         </div>
 
-    </div>
+    </section>
 
-    <script src="script.js"></script>
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
