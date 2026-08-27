@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>StarSprint</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -25,39 +23,17 @@
         </div>
 
         <nav>
-
-            <button data-screen="homeScreen">
-                HOME
-            </button>
-
-            <button data-screen="shopScreen">
-                SHOP
-            </button>
-
-            <button data-screen="leagueScreen">
-                LEAGUES
-            </button>
-
-            <button data-screen="teamScreen">
-                TEAMS
-            </button>
-
-            <button data-screen="profileScreen">
-                PROFILE
-            </button>
-
+            <button data-screen="homeScreen">HOME</button>
+            <button data-screen="shopScreen">SHOP</button>
+            <button data-screen="leagueScreen">LEAGUES</button>
+            <button data-screen="teamScreen">TEAMS</button>
+            <button data-screen="profileScreen">PROFILE</button>
         </nav>
 
         <div class="currency">
-
             <span>◈</span>
-
-            <strong id="credits">
-                1000
-            </strong>
-
+            <strong id="credits">1000</strong>
             CR
-
         </div>
 
     </header>
@@ -98,45 +74,21 @@
             <div class="home-cards">
 
                 <div class="info-card">
-
                     <small>LEAGUE</small>
-
-                    <strong id="homeLeague">
-                        BRONZE III
-                    </strong>
-
-                    <span id="homeRating">
-                        1000 LR
-                    </span>
-
+                    <strong id="homeLeague">BRONZE III</strong>
+                    <span id="homeRating">1000 LR</span>
                 </div>
 
                 <div class="info-card">
-
                     <small>BEST WPM</small>
-
-                    <strong id="homeBestWpm">
-                        0
-                    </strong>
-
-                    <span>
-                        WPM
-                    </span>
-
+                    <strong id="homeBestWpm">0</strong>
+                    <span>WPM</span>
                 </div>
 
                 <div class="info-card">
-
                     <small>RACES</small>
-
-                    <strong id="homeRaces">
-                        0
-                    </strong>
-
-                    <span>
-                        COMPLETED
-                    </span>
-
+                    <strong id="homeRaces">0</strong>
+                    <span>COMPLETED</span>
                 </div>
 
             </div>
@@ -162,7 +114,10 @@
                 SELECT A SECTOR
             </h2>
 
-            <div id="sectorGrid" class="sector-grid"></div>
+            <div
+                id="sectorGrid"
+                class="sector-grid"
+            ></div>
 
             <button
                 id="startRaceButton"
@@ -195,9 +150,7 @@
 
         </div>
 
-
         <div id="raceCountdown"></div>
-
 
         <section id="typingPanel">
 
@@ -222,16 +175,17 @@
 
                 <span>
                     ACC:
-                    <strong id="raceAccuracy">
-                        100%
-                    </strong>
+                    <strong id="raceAccuracy">100%</strong>
                 </span>
 
                 <span>
                     PROGRESS:
-                    <strong id="raceProgress">
-                        0%
-                    </strong>
+                    <strong id="raceProgress">0%</strong>
+                </span>
+
+                <span>
+                    PLACE:
+                    <strong id="racePosition">#1</strong>
                 </span>
 
             </div>
@@ -245,10 +199,7 @@
          RESULTS
     ================================================== -->
 
-    <main
-        id="resultsScreen"
-        class="screen hidden"
-    >
+    <main id="resultsScreen" class="screen hidden">
 
         <section class="results-panel">
 
@@ -266,23 +217,17 @@
 
                 <div>
                     <small>WPM</small>
-                    <strong id="finalWpm">
-                        0
-                    </strong>
+                    <strong id="finalWpm">0</strong>
                 </div>
 
                 <div>
                     <small>ACCURACY</small>
-                    <strong id="finalAccuracy">
-                        100%
-                    </strong>
+                    <strong id="finalAccuracy">100%</strong>
                 </div>
 
                 <div>
                     <small>REWARD</small>
-                    <strong id="finalReward">
-                        0 CR
-                    </strong>
+                    <strong id="finalReward">0 CR</strong>
                 </div>
 
             </div>
@@ -314,10 +259,7 @@
          SHOP
     ================================================== -->
 
-    <main
-        id="shopScreen"
-        class="screen hidden"
-    >
+    <main id="shopScreen" class="screen hidden">
 
         <section class="page-content">
 
@@ -348,10 +290,7 @@
          LEAGUES
     ================================================== -->
 
-    <main
-        id="leagueScreen"
-        class="screen hidden"
-    >
+    <main id="leagueScreen" class="screen hidden">
 
         <section class="page-content">
 
@@ -401,10 +340,7 @@
          TEAMS
     ================================================== -->
 
-    <main
-        id="teamScreen"
-        class="screen hidden"
-    >
+    <main id="teamScreen" class="screen hidden">
 
         <section class="page-content">
 
@@ -433,9 +369,7 @@
                     </h3>
 
                     <p>
-                        <span id="teamMembers">
-                            4
-                        </span>
+                        <span id="teamMembers">4</span>
                         / 20 MEMBERS
                     </p>
 
@@ -452,11 +386,7 @@
                     </strong>
 
                     <div class="xp-bar">
-
-                        <div
-                            id="teamXpBar"
-                        ></div>
-
+                        <div id="teamXpBar"></div>
                     </div>
 
                 </div>
@@ -496,10 +426,7 @@
          PROFILE
     ================================================== -->
 
-    <main
-        id="profileScreen"
-        class="screen hidden"
-    >
+    <main id="profileScreen" class="screen hidden">
 
         <section class="page-content">
 
@@ -538,51 +465,23 @@
             <div class="profile-stats">
 
                 <div class="profile-stat">
-
-                    <small>
-                        RACES
-                    </small>
-
-                    <strong id="profileRaces">
-                        0
-                    </strong>
-
+                    <small>RACES</small>
+                    <strong id="profileRaces">0</strong>
                 </div>
 
                 <div class="profile-stat">
-
-                    <small>
-                        WINS
-                    </small>
-
-                    <strong id="profileWins">
-                        0
-                    </strong>
-
+                    <small>WINS</small>
+                    <strong id="profileWins">0</strong>
                 </div>
 
                 <div class="profile-stat">
-
-                    <small>
-                        BEST WPM
-                    </small>
-
-                    <strong id="profileBestWpm">
-                        0
-                    </strong>
-
+                    <small>BEST WPM</small>
+                    <strong id="profileBestWpm">0</strong>
                 </div>
 
                 <div class="profile-stat">
-
-                    <small>
-                        XP
-                    </small>
-
-                    <strong id="profileXp">
-                        0
-                    </strong>
-
+                    <small>XP</small>
+                    <strong id="profileXp">0</strong>
                 </div>
 
             </div>
