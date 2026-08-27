@@ -3,148 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>StarSprint</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div id="game">
+<div id="app">
 
-    <!-- ================= HEADER ================= -->
+    <!-- ==================================================
+         TOP BAR
+    ================================================== -->
 
-    <header>
-        <div class="logo">
-            ✦ STARSPRINT
+    <header id="topbar">
+
+        <div class="brand">
+            <span>✦</span>
+            STARSPRINT
         </div>
 
-        <div id="headerStats" class="header-stats hidden">
-            <div>
-                <small>WPM</small>
-                <strong id="wpm">0</strong>
-            </div>
+        <nav>
 
-            <div>
-                <small>ACCURACY</small>
-                <strong id="accuracy">100%</strong>
-            </div>
+            <button data-screen="homeScreen">
+                HOME
+            </button>
 
-            <div>
-                <small>PROGRESS</small>
-                <strong id="progress">0%</strong>
-            </div>
+            <button data-screen="shopScreen">
+                SHOP
+            </button>
+
+            <button data-screen="leagueScreen">
+                LEAGUES
+            </button>
+
+            <button data-screen="teamScreen">
+                TEAMS
+            </button>
+
+            <button data-screen="profileScreen">
+                PROFILE
+            </button>
+
+        </nav>
+
+        <div class="currency">
+
+            <span>◈</span>
+
+            <strong id="credits">
+                1000
+            </strong>
+
+            CR
+
         </div>
+
     </header>
 
 
-    <!-- ================= GALAXY MAP ================= -->
+    <!-- ==================================================
+         HOME
+    ================================================== -->
 
-    <section id="galaxyScreen">
+    <main id="homeScreen" class="screen">
 
-        <div class="galaxy-bg"></div>
+        <div class="home-background"></div>
 
-        <div class="galaxy-content">
+        <section class="home-content">
 
-            <div class="title-small">
+            <p class="eyebrow">
                 STARSPRINT NETWORK
-            </div>
-
-            <h1>SELECT A SECTOR</h1>
-
-            <p class="subtitle">
-                Choose your destination.
             </p>
 
-            <div class="sector-grid">
+            <h1>
+                TYPE.
+                <span>RACE.</span>
+                CONQUER.
+            </h1>
 
-                <button class="sector selected" data-sector="0">
-                    <div class="sector-icon">🌌</div>
-                    <strong>ORION GATE</strong>
-                    <span>Beginner</span>
-                </button>
+            <p class="home-description">
+                Pilot your spacecraft through the galaxy
+                using nothing but your typing speed.
+            </p>
 
-                <button class="sector" data-sector="1">
-                    <div class="sector-icon">☄️</div>
-                    <strong>ASTEROID RUN</strong>
-                    <span>Intermediate</span>
-                </button>
-
-                <button class="sector locked" data-sector="2">
-                    <div class="sector-icon">🪐</div>
-                    <strong>GIANT'S RING</strong>
-                    <span>Locked</span>
-                </button>
-
-                <button class="sector locked" data-sector="3">
-                    <div class="sector-icon">🕳️</div>
-                    <strong>VOID EDGE</strong>
-                    <span>Locked</span>
-                </button>
-
-            </div>
-
-            <div class="sector-info">
-                <div>
-                    <span>RACE LENGTH</span>
-                    <b id="sectorLength">SHORT</b>
-                </div>
-
-                <div>
-                    <span>AI LEVEL</span>
-                    <b id="sectorDifficulty">BEGINNER</b>
-                </div>
-
-                <div>
-                    <span>REWARD</span>
-                    <b id="sectorReward">100 CR</b>
-                </div>
-            </div>
-
-            <button id="launchButton" class="main-button">
-                LAUNCH RACE
+            <button
+                id="playButton"
+                class="primary-button large"
+            >
+                🚀 START RACING
             </button>
 
-        </div>
+            <div class="home-cards">
 
-    </section>
+                <div class="info-card">
+
+                    <small>LEAGUE</small>
+
+                    <strong id="homeLeague">
+                        BRONZE III
+                    </strong>
+
+                    <span id="homeRating">
+                        1000 LR
+                    </span>
+
+                </div>
+
+                <div class="info-card">
+
+                    <small>BEST WPM</small>
+
+                    <strong id="homeBestWpm">
+                        0
+                    </strong>
+
+                    <span>
+                        WPM
+                    </span>
+
+                </div>
+
+                <div class="info-card">
+
+                    <small>RACES</small>
+
+                    <strong id="homeRaces">
+                        0
+                    </strong>
+
+                    <span>
+                        COMPLETED
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
 
 
-    <!-- ================= RACE ================= -->
+    <!-- ==================================================
+         RACE SELECT
+    ================================================== -->
 
-    <section id="raceScreen" class="hidden">
+    <main id="raceSelectScreen" class="screen hidden">
+
+        <section class="page-content">
+
+            <p class="eyebrow">
+                RACE CONTROL
+            </p>
+
+            <h2>
+                SELECT A SECTOR
+            </h2>
+
+            <div id="sectorGrid" class="sector-grid"></div>
+
+            <button
+                id="startRaceButton"
+                class="primary-button"
+            >
+                LAUNCH
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         RACE
+    ================================================== -->
+
+    <main id="raceScreen" class="screen hidden">
 
         <div id="space">
 
-            <div class="stars"></div>
+            <div class="space-stars"></div>
 
-            <div class="planet planet-one"></div>
-            <div class="planet planet-two"></div>
+            <div class="planet planet-a"></div>
+            <div class="planet planet-b"></div>
 
-            <div class="asteroid asteroid-one"></div>
-            <div class="asteroid asteroid-two"></div>
-            <div class="asteroid asteroid-three"></div>
-            <div class="asteroid asteroid-four"></div>
+            <div id="raceLanes"></div>
 
             <div id="finishLine"></div>
-
-            <!-- LANES -->
-            <div id="lanes"></div>
-
-            <!-- SHIPS ARE INSERTED HERE -->
 
         </div>
 
 
-        <!-- COUNTDOWN -->
-
-        <div id="countdown"></div>
+        <div id="raceCountdown"></div>
 
 
-        <!-- TYPING -->
+        <section id="typingPanel">
 
-        <section id="typingArea">
-
-            <div id="textDisplay"></div>
+            <div id="raceText"></div>
 
             <input
                 id="typingInput"
@@ -156,75 +213,383 @@
                 disabled
             >
 
-            <div class="typing-info">
+            <div class="typingStats">
 
                 <span>
-                    CHARACTERS:
-                    <b id="characters">0 / 0</b>
+                    WPM:
+                    <strong id="raceWpm">0</strong>
                 </span>
 
                 <span>
-                    ERRORS:
-                    <b id="errors">0</b>
+                    ACC:
+                    <strong id="raceAccuracy">
+                        100%
+                    </strong>
+                </span>
+
+                <span>
+                    PROGRESS:
+                    <strong id="raceProgress">
+                        0%
+                    </strong>
                 </span>
 
             </div>
 
         </section>
 
-    </section>
+    </main>
 
 
-    <!-- ================= RESULTS ================= -->
+    <!-- ==================================================
+         RESULTS
+    ================================================== -->
 
-    <section id="resultsScreen" class="overlay hidden">
+    <main
+        id="resultsScreen"
+        class="screen hidden"
+    >
 
-        <div class="results-panel">
+        <section class="results-panel">
 
-            <div class="result-icon" id="resultIcon">
-                ★
-            </div>
+            <p class="eyebrow">
+                RACE COMPLETE
+            </p>
 
-            <div class="title-small">
-                RACE RESULTS
-            </div>
+            <h2 id="resultsTitle">
+                RESULTS
+            </h2>
 
-            <h1 id="resultTitle">
-                VICTORY
-            </h1>
+            <div id="resultsList"></div>
 
-            <div id="leaderboard"></div>
-
-            <div class="personal-results">
+            <div class="result-stats">
 
                 <div>
-                    <span>WPM</span>
-                    <strong id="finalWpm">0</strong>
+                    <small>WPM</small>
+                    <strong id="finalWpm">
+                        0
+                    </strong>
                 </div>
 
                 <div>
-                    <span>ACCURACY</span>
-                    <strong id="finalAccuracy">100%</strong>
+                    <small>ACCURACY</small>
+                    <strong id="finalAccuracy">
+                        100%
+                    </strong>
                 </div>
 
                 <div>
-                    <span>REWARD</span>
-                    <strong id="finalReward">0 CR</strong>
+                    <small>REWARD</small>
+                    <strong id="finalReward">
+                        0 CR
+                    </strong>
                 </div>
 
             </div>
 
-            <button id="againButton" class="main-button">
-                RACE AGAIN
-            </button>
+            <div class="result-buttons">
 
-            <button id="mapButton" class="secondary-button">
-                GALAXY MAP
-            </button>
+                <button
+                    id="raceAgainButton"
+                    class="primary-button"
+                >
+                    RACE AGAIN
+                </button>
 
-        </div>
+                <button
+                    id="resultsHomeButton"
+                    class="secondary-button"
+                >
+                    HOME
+                </button>
 
-    </section>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         SHOP
+    ================================================== -->
+
+    <main
+        id="shopScreen"
+        class="screen hidden"
+    >
+
+        <section class="page-content">
+
+            <p class="eyebrow">
+                GALACTIC MARKET
+            </p>
+
+            <h2>
+                SHOP
+            </h2>
+
+            <p class="page-description">
+                Customize your ship.
+                Cosmetics don't affect race performance.
+            </p>
+
+            <div
+                id="shopGrid"
+                class="shop-grid"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         LEAGUES
+    ================================================== -->
+
+    <main
+        id="leagueScreen"
+        class="screen hidden"
+    >
+
+        <section class="page-content">
+
+            <p class="eyebrow">
+                COMPETITIVE DIVISION
+            </p>
+
+            <h2>
+                LEAGUES
+            </h2>
+
+            <div class="league-current">
+
+                <div class="league-emblem">
+                    ★
+                </div>
+
+                <div>
+
+                    <small>
+                        CURRENT LEAGUE
+                    </small>
+
+                    <h3 id="leagueName">
+                        BRONZE III
+                    </h3>
+
+                    <p id="leagueRating">
+                        1000 LR
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div
+                id="leagueList"
+                class="league-list"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         TEAMS
+    ================================================== -->
+
+    <main
+        id="teamScreen"
+        class="screen hidden"
+    >
+
+        <section class="page-content">
+
+            <p class="eyebrow">
+                PILOT NETWORK
+            </p>
+
+            <h2>
+                TEAMS
+            </h2>
+
+            <div class="team-panel">
+
+                <div class="team-symbol">
+                    ◈
+                </div>
+
+                <div class="team-information">
+
+                    <small>
+                        YOUR TEAM
+                    </small>
+
+                    <h3 id="teamName">
+                        STARFORGE
+                    </h3>
+
+                    <p>
+                        <span id="teamMembers">
+                            4
+                        </span>
+                        / 20 MEMBERS
+                    </p>
+
+                </div>
+
+                <div class="team-xp">
+
+                    <small>
+                        TEAM XP
+                    </small>
+
+                    <strong id="teamXp">
+                        1,240
+                    </strong>
+
+                    <div class="xp-bar">
+
+                        <div
+                            id="teamXpBar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="team-stats">
+
+                <div>
+                    <small>WEEKLY DISTANCE</small>
+                    <strong>8,492 KM</strong>
+                </div>
+
+                <div>
+                    <small>TEAM RANK</small>
+                    <strong>#184</strong>
+                </div>
+
+                <div>
+                    <small>SEASON XP</small>
+                    <strong>12,842</strong>
+                </div>
+
+            </div>
+
+            <div class="coming-soon">
+                TEAM MANAGEMENT
+                <span>COMING SOON</span>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         PROFILE
+    ================================================== -->
+
+    <main
+        id="profileScreen"
+        class="screen hidden"
+    >
+
+        <section class="page-content">
+
+            <p class="eyebrow">
+                PILOT DATABASE
+            </p>
+
+            <h2>
+                PROFILE
+            </h2>
+
+            <div class="profile-header">
+
+                <div class="profile-avatar">
+                    🚀
+                </div>
+
+                <div>
+
+                    <small>
+                        PILOT
+                    </small>
+
+                    <h3 id="profileName">
+                        STAR PILOT
+                    </h3>
+
+                    <p id="profileLeague">
+                        BRONZE III
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="profile-stats">
+
+                <div class="profile-stat">
+
+                    <small>
+                        RACES
+                    </small>
+
+                    <strong id="profileRaces">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="profile-stat">
+
+                    <small>
+                        WINS
+                    </small>
+
+                    <strong id="profileWins">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="profile-stat">
+
+                    <small>
+                        BEST WPM
+                    </small>
+
+                    <strong id="profileBestWpm">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="profile-stat">
+
+                    <small>
+                        XP
+                    </small>
+
+                    <strong id="profileXp">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
