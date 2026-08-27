@@ -1,1623 +1,1174 @@
-/* =====================================================
-   STARSPRINT v0.2
-   Typing Space Racing Game
-===================================================== */
+/* =========================================================
+   STARSPRINT
+   JS PART 1/5
+   GAME DATA + NAVIGATION
+========================================================= */
 
+const game = {
+    player: {
+        name: "PILOT",
+        credits: 1250,
 
-/* =====================================================
-   DOM
-===================================================== */
+        races: 0,
+        wins: 0,
+        bestWPM: 0,
+        averageWPM: 0,
+        accuracy: 100,
 
-const galaxyScreen =
-    document.getElementById("galaxyScreen");
-
-const raceScreen =
-    document.getElementById("raceScreen");
-
-const resultsScreen =
-    document.getElementById("resultsScreen");
-
-const headerStats =
-    document.getElementById("headerStats");
-
-const launchButton =
-    document.getElementById("launchButton");
-
-const againButton =
-    document.getElementById("againButton");
-
-const mapButton =
-    document.getElementById("mapButton");
-
-const typingInput =
-    document.getElementById("typingInput");
-
-const textDisplay =
-    document.getElementById("textDisplay");
-
-const countdown =
-    document.getElementById("countdown");
-
-const lanes =
-    document.getElementById("lanes");
-
-const space =
-    document.getElementById("space");
-
-const leaderboard =
-    document.getElementById("leaderboard");
-
-
-/* stats */
-
-const wpmDisplay =
-    document.getElementById("wpm");
-
-const accuracyDisplay =
-    document.getElementById("accuracy");
-
-const progressDisplay =
-    document.getElementById("progress");
-
-const charactersDisplay =
-    document.getElementById("characters");
-
-const errorsDisplay =
-    document.getElementById("errors");
-
-
-/* sector information */
-
-const sectorLength =
-    document.getElementById("sectorLength");
-
-const sectorDifficulty =
-    document.getElementById("sectorDifficulty");
-
-const sectorReward =
-    document.getElementById("sectorReward");
-
-
-/* results */
-
-const resultTitle =
-    document.getElementById("resultTitle");
-
-const resultIcon =
-    document.getElementById("resultIcon");
-
-const finalWpm =
-    document.getElementById("finalWpm");
-
-const finalAccuracy =
-    document.getElementById("finalAccuracy");
-
-const finalReward =
-    document.getElementById("finalReward");
-
-
-/* =====================================================
-   GAME DATA
-===================================================== */
-
-const passages = [
-
-    "The stars stretched endlessly beyond the edge of the nebula.",
-
-    "A distant planet appeared through the clouds of violet gas.",
-
-    "The spacecraft accelerated toward the glowing edge of the galaxy.",
-
-    "Millions of stars surrounded the tiny ship as it crossed the void.",
-
-    "The pilot watched the asteroid field approach and prepared for the jump.",
-
-    "Beyond the moon was a strange world covered in oceans of blue light.",
-
-    "The navigation system calculated a route through the dangerous sector.",
-
-    "A silent signal echoed through space from somewhere beyond the stars."
-
-];
-
-
-/* =====================================================
-   SECTORS
-===================================================== */
-
-const sectors = [
-
-    {
-        name: "ORION GATE",
-
-        difficulty: "BEGINNER",
-
-        length: "SHORT",
-
-        reward: 100,
-
-        aiMin: 25,
-
-        aiMax: 38
+        ship: "starter",
+        league: "Bronze",
+        team: null
     },
 
-    {
-        name: "ASTEROID RUN",
+    currentScreen: "homeScreen",
 
-        difficulty: "INTERMEDIATE",
+    selectedSector: null,
 
-        length: "MEDIUM",
+    race: {
+        active: false,
+        finished: false,
 
-        reward: 175,
+        text: "",
+        typed: "",
 
-        aiMin: 35,
+        startTime: 0,
+        endTime: 0,
 
-        aiMax: 50
-    },
+        correct: 0,
+        errors: 0,
 
-    {
-        name: "GIANT'S RING",
+        wpm: 0,
+        accuracy: 100,
 
-        difficulty: "ADVANCED",
+        position: 1,
 
-        length: "LONG",
-
-        reward: 300,
-
-        aiMin: 45,
-
-        aiMax: 62
-    },
-
-    {
-        name: "VOID EDGE",
-
-        difficulty: "EXTREME",
-
-        length: "EXTREME",
-
-        reward: 500,
-
-        aiMin: 55,
-
-        aiMax: 75
+        ai: []
     }
-
-];
-
-
-let selectedSector = 0;
-
-
-/* =====================================================
-   AI DATA
-===================================================== */
-
-const aiProfiles = [
-
-    {
-        name: "NOVA",
-
-        ship: "SCOUT",
-
-        skill: "cadet"
-    },
-
-    {
-        name: "KESTREL",
-
-        ship: "INTERCEPTOR",
-
-        skill: "pilot"
-    },
-
-    {
-        name: "VEX",
-
-        ship: "EXPLORER",
-
-        skill: "pilot"
-    },
-
-    {
-        name: "ORBIT",
-
-        ship: "RANGER",
-
-        skill: "ace"
-    }
-
-];
-
-
-/*
-    AI skill modifiers.
-
-    These are NOT fixed movement speeds.
-
-    WPM is converted into typing progress.
-*/
-
-const aiSkill = {
-
-    cadet: {
-
-        accuracy: [88, 94],
-
-        reaction: [500, 850],
-
-        consistency: 0.25
-
-    },
-
-    pilot: {
-
-        accuracy: [92, 97],
-
-        reaction: [350, 600],
-
-        consistency: 0.14
-
-    },
-
-    ace: {
-
-        accuracy: [96, 99],
-
-        reaction: [250, 450],
-
-        consistency: 0.08
-
-    }
-
 };
 
 
-/* =====================================================
-   GAME STATE
-===================================================== */
+/* =========================================================
+   RACE TEXT
+========================================================= */
 
-let currentText = "";
-
-let currentIndex = 0;
-
-let totalTyped = 0;
-
-let correctTyped = 0;
-
-let errors = 0;
-
-let raceStarted = false;
-
-let raceFinished = false;
-
-let startTime = 0;
-
-let raceTimer = null;
-
-let aiTimer = null;
-
-let playerShip = null;
-
-let aiRacers = [];
+const raceTexts = [
+    "The stars were quiet as the small spacecraft crossed the edge of the system.",
+    "Beyond the asteroid belt, a distant blue planet appeared through the darkness.",
+    "Navigation systems online. Engines stable. The pilot prepared for another jump.",
+    "A signal appeared on the scanner, coming from somewhere beyond the outer planets.",
+    "The spacecraft accelerated through the empty void while distant stars blurred past.",
+    "Every journey begins with a single destination and a willingness to explore.",
+    "The colony ship drifted silently through the empty system searching for a new home.",
+    "A strange object moved across the scanner and disappeared before anyone could identify it."
+];
 
 
-/* =====================================================
-   UTILITY
-===================================================== */
+/* =========================================================
+   AI NAMES
+========================================================= */
 
-function random(min, max) {
+const aiNames = [
+    "Nova",
+    "Orion",
+    "Comet",
+    "Vega",
+    "Atlas",
+    "Luna",
+    "Cosmo",
+    "Echo",
+    "Pulsar",
+    "Drift"
+];
 
-    return Math.random() * (max - min) + min;
 
+/* =========================================================
+   SCREEN MANAGEMENT
+========================================================= */
+
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.add("hidden");
+    });
+
+    const screen = document.getElementById(id);
+
+    if (screen) {
+        screen.classList.remove("hidden");
+    }
+
+    game.currentScreen = id;
 }
 
 
-function randomInt(min, max) {
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-    return Math.floor(
-        random(min, max + 1)
-    );
-
-}
-
-
-function choose(array) {
-
-    return array[
-        Math.floor(
-            Math.random() * array.length
-        )
-    ];
-
-}
-
-
-/* =====================================================
-   SECTOR SELECTION
-===================================================== */
-
-const sectorButtons =
-    document.querySelectorAll(".sector");
-
-
-sectorButtons.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        const index =
-            Number(button.dataset.sector);
-
-        if (index > 1) {
-            return;
-        }
-
-        selectedSector = index;
-
-        sectorButtons.forEach(btn => {
-
-            btn.classList.remove("selected");
-
+function setupNavigation() {
+    document.querySelectorAll("[data-screen]").forEach(button => {
+        button.addEventListener("click", () => {
+            showScreen(button.dataset.screen);
         });
-
-        button.classList.add("selected");
-
-        updateSectorInfo();
-
     });
-
-});
-
-
-function updateSectorInfo() {
-
-    const sector =
-        sectors[selectedSector];
-
-    sectorLength.textContent =
-        sector.length;
-
-    sectorDifficulty.textContent =
-        sector.difficulty;
-
-    sectorReward.textContent =
-        `${sector.reward} CR`;
-
 }
 
 
-updateSectorInfo();
-
-
-/* =====================================================
-   TEXT
-===================================================== */
-
-function getPassage() {
-
-    return choose(passages);
-
+function goHome() {
+    showScreen("homeScreen");
 }
 
 
-function prepareText() {
-
-    currentText =
-        getPassage();
-
-    currentIndex = 0;
-
-    totalTyped = 0;
-
-    correctTyped = 0;
-
-    errors = 0;
-
-    textDisplay.innerHTML = "";
-
-    for (
-        let i = 0;
-        i < currentText.length;
-        i++
-    ) {
-
-        const span =
-            document.createElement("span");
-
-        span.textContent =
-            currentText[i];
-
-        if (i === 0) {
-
-            span.classList.add("current");
-
-        }
-
-        textDisplay.appendChild(span);
-
-    }
-
-    updateStats();
-
+function goRace() {
+    showScreen("raceSelectScreen");
 }
 
 
-/* =====================================================
-   CREATE LANES
-===================================================== */
-
-function createLanes() {
-
-    lanes.innerHTML = "";
-
-    for (let i = 0; i < 5; i++) {
-
-        const lane =
-            document.createElement("div");
-
-        lane.className =
-            "lane";
-
-        lanes.appendChild(lane);
-
-    }
-
+function goShop() {
+    showScreen("shopScreen");
 }
 
 
-/* =====================================================
-   CREATE SHIP
-===================================================== */
-
-function createShip(
-    name,
-    type,
-    lane,
-    isAI = false
-) {
-
-    const ship =
-        document.createElement("div");
-
-    ship.className =
-        `ship ${isAI ? "ai" : "player"}`;
-
-    ship.style.top =
-        `${lane}%`;
-
-    const body =
-        document.createElement("div");
-
-    body.className =
-        "ship-body";
-
-    const wingLeft =
-        document.createElement("div");
-
-    wingLeft.className =
-        "ship-wing left";
-
-    const wingRight =
-        document.createElement("div");
-
-    wingRight.className =
-        "ship-wing right";
-
-    const engine =
-        document.createElement("div");
-
-    engine.className =
-        "ship-engine";
-
-    const label =
-        document.createElement("div");
-
-    label.className =
-        "ship-label";
-
-    label.textContent =
-        `${name} • ${type}`;
-
-    ship.appendChild(body);
-
-    ship.appendChild(wingLeft);
-
-    ship.appendChild(wingRight);
-
-    ship.appendChild(engine);
-
-    ship.appendChild(label);
-
-    space.appendChild(ship);
-
-    return ship;
-
+function goLeagues() {
+    showScreen("leaguesScreen");
 }
 
 
-/* =====================================================
-   CREATE RACERS
-===================================================== */
-
-function createRacers() {
-
-    document
-        .querySelectorAll(".ship")
-        .forEach(ship => ship.remove());
-
-    playerShip =
-        createShip(
-            "YOU",
-            "STARLING",
-            10,
-            false
-        );
+function goTeams() {
+    showScreen("teamsScreen");
+}
 
 
-    aiRacers = [];
+function goProfile() {
+    showScreen("profileScreen");
+}
 
 
-    const sector =
-        sectors[selectedSector];
+/* =========================================================
+   SECTOR SELECTION
+========================================================= */
 
+function setupSectors() {
+    document.querySelectorAll(".sector-card").forEach(card => {
+        card.addEventListener("click", () => {
 
-    aiProfiles.forEach(
-        (profile, index) => {
-
-            const settings =
-                aiSkill[profile.skill];
-
-            let wpm =
-                random(
-                    sector.aiMin,
-                    sector.aiMax
-                );
-
-
-            /*
-                Skill adjusts how far inside
-                the sector's WPM range they sit.
-            */
-
-            if (profile.skill === "cadet") {
-
-                wpm *= 0.88;
-
+            if (card.classList.contains("locked")) {
+                return;
             }
 
-            if (profile.skill === "ace") {
+            document.querySelectorAll(".sector-card").forEach(other => {
+                other.classList.remove("selected");
+            });
 
-                wpm *= 1.08;
+            card.classList.add("selected");
 
-            }
-
-
-            wpm = Math.round(wpm);
-
-
-            const accuracy =
-                randomInt(
-                    settings.accuracy[0],
-                    settings.accuracy[1]
-                );
-
-
-            const reaction =
-                random(
-                    settings.reaction[0],
-                    settings.reaction[1]
-                );
-
-
-            const ai = {
-
-                name: profile.name,
-
-                ship: profile.ship,
-
-                skill: profile.skill,
-
-                wpm: wpm,
-
-                accuracy: accuracy,
-
-                reaction: reaction,
-
-                consistency:
-                    settings.consistency,
-
-                progress: 0,
-
-                typed: 0,
-
-                correct: 0,
-
-                errors: 0,
-
-                nextType: 0,
-
-                finished: false,
-
-                element:
-                    createShip(
-                        profile.name,
-                        profile.ship,
-                        30 + index * 20,
-                        true
-                    )
-
-            };
-
-
-            aiRacers.push(ai);
-
-        }
-
-    );
-
-}
-
-
-/* =====================================================
-   RESET SHIPS
-===================================================== */
-
-function resetShipPositions() {
-
-    if (playerShip) {
-
-        playerShip.style.left =
-            "20px";
-
-    }
-
-    aiRacers.forEach(ai => {
-
-        ai.progress = 0;
-
-        ai.typed = 0;
-
-        ai.correct = 0;
-
-        ai.errors = 0;
-
-        ai.finished = false;
-
-        ai.element.style.left =
-            "20px";
-
+            game.selectedSector =
+                card.dataset.sector || card.id;
+        });
     });
-
 }
 
 
-/* =====================================================
+/* =========================================================
+   RANDOM RACE TEXT
+========================================================= */
+
+function getRaceText() {
+    const index = Math.floor(Math.random() * raceTexts.length);
+    return raceTexts[index];
+}
+
+
+/* =========================================================
+   RANDOM ITEM
+========================================================= */
+
+function randomItem(array) {
+    return array[
+        Math.floor(Math.random() * array.length)
+    ];
+}
+
+
+/* =========================================================
+   SAFE TEXT
+========================================================= */
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+
+/* =========================================================
+   INITIALISE
+========================================================= */
+
+function initGame() {
+    setupNavigation();
+    setupSectors();
+
+    showScreen("homeScreen");
+
+    updatePlayerDisplay();
+}
+
+
+document.addEventListener("DOMContentLoaded", initGame);
+
+/* =========================================================
+   STARSPRINT
+   JS PART 2/5
+   RACE SETUP
+========================================================= */
+
+
+/* =========================================================
    START RACE
-===================================================== */
-
-launchButton.addEventListener(
-    "click",
-    startRace
-);
-
+========================================================= */
 
 function startRace() {
 
-    galaxyScreen.classList.add(
-        "hidden"
-    );
+    if (game.race.active) {
+        return;
+    }
 
-    resultsScreen.classList.add(
-        "hidden"
-    );
+    game.race = {
+        active: false,
+        finished: false,
 
-    raceScreen.classList.remove(
-        "hidden"
-    );
+        text: getRaceText(),
+        typed: "",
 
-    headerStats.classList.remove(
-        "hidden"
-    );
+        startTime: 0,
+        endTime: 0,
 
+        correct: 0,
+        errors: 0,
 
-    prepareText();
+        wpm: 0,
+        accuracy: 100,
 
-    createLanes();
+        position: 1,
 
-    createRacers();
-
-    resetShipPositions();
-
-
-    raceStarted = false;
-
-    raceFinished = false;
+        ai: []
+    };
 
 
-    typingInput.value = "";
+    showScreen("raceScreen");
 
-    typingInput.disabled = true;
 
+    const input = document.getElementById("typingInput");
+
+    if (input) {
+        input.value = "";
+    }
+
+
+    renderRaceText();
+
+
+    createAI();
+
+
+    runCountdown();
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+function runCountdown() {
+
+    const countdown =
+        document.getElementById("raceCountdown");
+
+
+    if (!countdown) {
+        beginRace();
+        return;
+    }
+
+
+    countdown.classList.remove("hidden");
 
     countdown.textContent = "3";
 
 
-    let number = 3;
+    setTimeout(() => {
+        countdown.textContent = "2";
+    }, 700);
 
 
-    const timer =
-        setInterval(() => {
+    setTimeout(() => {
+        countdown.textContent = "1";
+    }, 1400);
 
-            number--;
 
+    setTimeout(() => {
 
-            if (number > 0) {
+        countdown.textContent = "GO!";
 
-                countdown.textContent =
-                    number;
+        setTimeout(() => {
 
-            }
+            countdown.classList.add("hidden");
 
-            else if (number === 0) {
+            beginRace();
 
-                countdown.textContent =
-                    "GO!";
+        }, 400);
 
-                beginRace();
-
-            }
-
-            else {
-
-                clearInterval(timer);
-
-                countdown.textContent =
-                    "";
-
-            }
-
-        }, 1000);
-
+    }, 2100);
 }
 
 
-/* =====================================================
-   BEGIN
-===================================================== */
+/* =========================================================
+   BEGIN RACE
+========================================================= */
 
 function beginRace() {
 
-    raceStarted = true;
+    game.race.active = true;
 
-    raceFinished = false;
-
-    startTime =
-        Date.now();
+    game.race.startTime = performance.now();
 
 
-    typingInput.disabled =
-        false;
-
-    typingInput.focus();
+    const input =
+        document.getElementById("typingInput");
 
 
-    raceTimer =
-        setInterval(
-            updateStats,
-            100
-        );
+    if (input) {
+        input.value = "";
+        input.focus();
+    }
 
 
     startAI();
 
+    updateRaceStats();
+    updatePlayerShip();
 }
 
 
-/* =====================================================
-   PLAYER TYPING
-===================================================== */
+/* =========================================================
+   RANDOM AI STATS
+========================================================= */
 
-typingInput.addEventListener(
-    "input",
-    handleTyping
-);
+function createAI() {
+
+    game.race.ai = [];
 
 
-function handleTyping() {
+    for (let i = 0; i < 4; i++) {
 
-    if (
-        !raceStarted ||
-        raceFinished
-    ) {
+        const name = randomItem(aiNames);
 
+
+        /*
+           AI are intentionally imperfect.
+
+           Most racers:
+           35-75 WPM
+
+           Better racers:
+           70-90 WPM
+
+           Nobody starts at 150+ WPM.
+        */
+
+        let wpm;
+
+        const roll = Math.random();
+
+        if (roll < 0.65) {
+            wpm = randomNumber(35, 65);
+        }
+        else if (roll < 0.92) {
+            wpm = randomNumber(60, 78);
+        }
+        else {
+            wpm = randomNumber(78, 90);
+        }
+
+
+        game.race.ai.push({
+            name: name,
+
+            wpm: wpm,
+
+            accuracy: randomNumber(89, 99),
+
+            progress: 0,
+
+            finished: false,
+
+            finishTime: null,
+
+            errorChance:
+                randomNumber(1, 5) / 100
+        });
+    }
+}
+
+
+/* =========================================================
+   RANDOM NUMBER
+========================================================= */
+
+function randomNumber(min, max) {
+
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
+
+}
+
+/* =========================================================
+   STARSPRINT
+   JS PART 3/5
+   TYPING + PLAYER MOVEMENT
+========================================================= */
+
+
+/* =========================================================
+   SETUP TYPING
+========================================================= */
+
+function setupTyping() {
+
+    const input =
+        document.getElementById("typingInput");
+
+
+    if (!input) {
         return;
-
     }
 
 
-    const value =
-        typingInput.value;
+    input.addEventListener("input", () => {
+
+        if (!game.race.active) {
+            return;
+        }
 
 
-    if (!value.length) {
-
-        return;
-
-    }
+        game.race.typed = input.value;
 
 
-    const character =
-        value[value.length - 1];
+        calculateTypingStats();
 
-    const expected =
-        currentText[currentIndex];
+        renderRaceText();
 
-
-    totalTyped++;
-
-
-    if (
-        character === expected
-    ) {
-
-        correctTyped++;
-
-        currentIndex++;
-
-        typingInput.value = "";
-
-        updateTextDisplay();
-
-        movePlayer();
-
-        updateStats();
+        updatePlayerShip();
 
 
         if (
-            currentIndex >=
-            currentText.length
+            game.race.typed.length >=
+            game.race.text.length
         ) {
-
-            finishRace(true);
-
+            finishRace();
         }
+    });
+
+
+    const panel =
+        document.getElementById("typingPanel");
+
+
+    if (panel) {
+
+        panel.addEventListener("click", () => {
+            input.focus();
+        });
 
     }
-
-    else {
-
-        errors++;
-
-        typingInput.value = "";
-
-        updateTextDisplay();
-
-        updateStats();
-
-    }
-
 }
 
 
-/* =====================================================
-   TEXT DISPLAY
-===================================================== */
+/* =========================================================
+   RENDER TEXT
+========================================================= */
 
-function updateTextDisplay() {
+function renderRaceText() {
 
-    const letters =
-        textDisplay.children;
+    const container =
+        document.getElementById("raceText");
+
+
+    if (!container) {
+        return;
+    }
+
+
+    let html = "";
 
 
     for (
         let i = 0;
-        i < letters.length;
+        i < game.race.text.length;
         i++
     ) {
 
-        letters[i]
-            .classList
-            .remove(
-                "correct",
-                "current"
-            );
+        const character =
+            game.race.text[i];
 
 
         if (
-            i < currentIndex
+            i < game.race.typed.length
         ) {
 
-            letters[i]
-                .classList
-                .add("correct");
+            if (
+                game.race.typed[i] === character
+            ) {
+
+                html +=
+                    `<span class="correct">${escapeHTML(character)}</span>`;
+
+            }
+            else {
+
+                html +=
+                    `<span style="color:#ff5e78">${escapeHTML(character)}</span>`;
+
+            }
 
         }
-
         else if (
-            i === currentIndex
+            i === game.race.typed.length
         ) {
 
-            letters[i]
-                .classList
-                .add("current");
+            html +=
+                `<span class="current">${escapeHTML(character)}</span>`;
 
         }
+        else {
 
+            html +=
+                escapeHTML(character);
+        }
     }
 
+
+    container.innerHTML = html;
 }
 
 
-/* =====================================================
-   PLAYER MOVEMENT
-===================================================== */
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-function movePlayer() {
+function escapeHTML(text) {
 
-    if (!playerShip) {
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* =========================================================
+   CALCULATE STATS
+========================================================= */
+
+function calculateTypingStats() {
+
+    let correct = 0;
+    let errors = 0;
+
+
+    for (
+        let i = 0;
+        i < game.race.typed.length;
+        i++
+    ) {
+
+        if (
+            game.race.typed[i] ===
+            game.race.text[i]
+        ) {
+
+            correct++;
+
+        }
+        else {
+
+            errors++;
+
+        }
+    }
+
+
+    game.race.correct = correct;
+    game.race.errors = errors;
+
+
+    updateRaceStats();
+}
+
+
+/* =========================================================
+   UPDATE STATS
+========================================================= */
+
+function updateRaceStats() {
+
+    if (!game.race.startTime) {
         return;
     }
 
 
-    const width =
-        space.clientWidth;
-
-
-    const shipWidth = 76;
-
-    const max =
-        width -
-        shipWidth -
-        35;
-
-
-    const progress =
-        currentIndex /
-        currentText.length;
-
-
-    const position =
-        20 +
-        (max - 20) *
-        progress;
-
-
-    playerShip.style.left =
-        `${position}px`;
-
-}
-
-
-/* =====================================================
-   WPM
-===================================================== */
-
-function getPlayerWPM() {
-
-    if (!startTime) {
-        return 0;
-    }
+    const elapsed =
+        (
+            performance.now() -
+            game.race.startTime
+        ) / 1000;
 
 
     const minutes =
-        (Date.now() - startTime)
-        / 60000;
+        elapsed / 60;
 
 
     if (minutes <= 0) {
-        return 0;
+        return;
     }
 
 
-    return Math.round(
-        (correctTyped / 5)
-        / minutes
+    game.race.wpm =
+        Math.round(
+            (game.race.correct / 5) /
+            minutes
+        );
+
+
+    const total =
+        game.race.typed.length;
+
+
+    game.race.accuracy =
+        total === 0
+            ? 100
+            : Math.round(
+                (
+                    game.race.correct /
+                    total
+                ) * 100
+            );
+
+
+    setText(
+        "raceWPM",
+        game.race.wpm
     );
 
-}
 
-
-/* =====================================================
-   ACCURACY
-===================================================== */
-
-function getPlayerAccuracy() {
-
-    if (totalTyped === 0) {
-        return 100;
-    }
-
-
-    return Math.round(
-        (correctTyped /
-            totalTyped) *
-        100
+    setText(
+        "raceAccuracy",
+        game.race.accuracy + "%"
     );
-
-}
-
-
-/* =====================================================
-   STATS
-===================================================== */
-
-function updateStats() {
-
-    const wpm =
-        getPlayerWPM();
-
-
-    const accuracy =
-        getPlayerAccuracy();
 
 
     const progress =
         Math.round(
             (
-                currentIndex /
-                currentText.length
+                game.race.typed.length /
+                game.race.text.length
             ) * 100
         );
 
 
-    wpmDisplay.textContent =
-        wpm;
-
-
-    accuracyDisplay.textContent =
-        `${accuracy}%`;
-
-
-    progressDisplay.textContent =
-        `${progress}%`;
-
-
-    charactersDisplay.textContent =
-        `${currentIndex} / ${currentText.length}`;
-
-
-    errorsDisplay.textContent =
-        errors;
-
-}
-
-
-/* =====================================================
-   AI ENGINE
-===================================================== */
-
-
-/*
-    Convert WPM into milliseconds per character.
-
-    1 word = roughly 5 characters.
-
-    Example:
-
-    40 WPM
-    = 200 characters/minute
-    = 3.33 characters/second
-*/
-
-function characterDelay(wpm) {
-
-    const charactersPerSecond =
-        (wpm * 5) / 60;
-
-
-    return (
-        1000 /
-        charactersPerSecond
+    setText(
+        "raceProgress",
+        progress + "%"
     );
-
 }
 
 
-/* =====================================================
+/* =========================================================
+   PLAYER SHIP
+========================================================= */
+
+function updatePlayerShip() {
+
+    const ship =
+        document.querySelector(
+            ".racer-ship.player"
+        );
+
+
+    const space =
+        document.getElementById("space");
+
+
+    if (!ship || !space) {
+        return;
+    }
+
+
+    const progress =
+        Math.min(
+            game.race.typed.length /
+            game.race.text.length,
+            1
+        );
+
+
+    const maximum =
+        space.clientWidth - 130;
+
+
+    ship.style.left =
+        `${20 + maximum * progress}px`;
+}
+
+
+/* =========================================================
+   KEEP STATS UPDATED
+========================================================= */
+
+setInterval(() => {
+
+    if (
+        game.race.active
+    ) {
+
+        updateRaceStats();
+        updatePlayerShip();
+
+    }
+
+}, 100);
+
+/* =========================================================
+   STARSPRINT
+   JS PART 4/5
+   AI RACING
+========================================================= */
+
+
+/* =========================================================
    START AI
-===================================================== */
+========================================================= */
 
 function startAI() {
 
-    aiRacers.forEach(ai => {
+    game.race.ai.forEach(ai => {
 
-        ai.nextType =
-            Date.now() +
-            ai.reaction;
+        ai.progress = 0;
+        ai.finished = false;
+        ai.finishTime = null;
 
     });
 
 
-    aiLoop();
-
+    requestAnimationFrame(updateAI);
 }
 
 
-/* =====================================================
-   AI LOOP
-===================================================== */
+/* =========================================================
+   UPDATE AI
+========================================================= */
 
-function aiLoop() {
+function updateAI() {
 
-    if (
-        raceFinished ||
-        !raceStarted
-    ) {
-
+    if (!game.race.active) {
         return;
-
     }
 
 
-    const now =
-        Date.now();
+    const elapsed =
+        (
+            performance.now() -
+            game.race.startTime
+        ) / 1000;
 
 
-    aiRacers.forEach(ai => {
+    const totalCharacters =
+        game.race.text.length;
+
+
+    game.race.ai.forEach(ai => {
 
         if (ai.finished) {
             return;
         }
 
 
-        if (
-            now <
-            ai.nextType
-        ) {
+        /*
+           WPM → characters per second.
 
-            return;
+           5 characters = approximately
+           one typing word.
+        */
 
-        }
+        const charactersPerSecond =
+            (
+                ai.wpm * 5
+            ) / 60;
 
 
-        simulateAICharacter(ai);
-
-
-        const baseDelay =
-            characterDelay(
-                ai.wpm
-            );
+        let expected =
+            charactersPerSecond *
+            elapsed;
 
 
         /*
-            Humans don't type at exactly
-            the same interval forever.
+           Accuracy makes AI occasionally
+           lose a little progress.
+        */
 
-            Add random variation.
+        const mistakePenalty =
+            1 -
+            (
+                (100 - ai.accuracy)
+                / 100
+            );
+
+
+        expected *= mistakePenalty;
+
+
+        /*
+           Small random variation means
+           the AI doesn't move like robots.
         */
 
         const variation =
-            random(
-                1 - ai.consistency,
-                1 + ai.consistency
+            1 +
+            (
+                Math.sin(
+                    elapsed * 1.7 +
+                    ai.wpm
+                ) * 0.025
             );
 
 
-        ai.nextType =
-            now +
-            baseDelay *
-            variation;
+        expected *= variation;
+
+
+        ai.progress =
+            Math.min(
+                expected /
+                totalCharacters,
+                1
+            );
+
+
+        if (
+            ai.progress >= 1
+        ) {
+
+            ai.progress = 1;
+
+            ai.finished = true;
+
+            ai.finishTime =
+                performance.now();
+
+        }
 
     });
 
 
-    aiTimer =
-        requestAnimationFrame(
-            aiLoop
+    renderAI();
+
+
+    calculatePosition();
+
+
+    requestAnimationFrame(updateAI);
+}
+
+
+/* =========================================================
+   RENDER AI
+========================================================= */
+
+function renderAI() {
+
+    const ships =
+        document.querySelectorAll(
+            ".racer-ship.ai"
         );
 
-}
+
+    const space =
+        document.getElementById("space");
 
 
-/* =====================================================
-   SIMULATE CHARACTER
-===================================================== */
-
-function simulateAICharacter(ai) {
-
-    if (
-        ai.typed >=
-        currentText.length
-    ) {
-
-        ai.finished = true;
-
-        return;
-
-    }
-
-
-    ai.typed++;
-
-
-    const accuracyRoll =
-        Math.random() * 100;
-
-
-    if (
-        accuracyRoll <=
-        ai.accuracy
-    ) {
-
-        ai.correct++;
-
-    }
-
-    else {
-
-        ai.errors++;
-
-    }
-
-
-    ai.progress =
-        ai.correct /
-        currentText.length;
-
-
-    moveAI(ai);
-
-
-    if (
-        ai.correct >=
-        currentText.length
-    ) {
-
-        ai.finished = true;
-
-        checkAIWin(ai);
-
-    }
-
-}
-
-
-/* =====================================================
-   AI MOVEMENT
-===================================================== */
-
-function moveAI(ai) {
-
-    const width =
-        space.clientWidth;
-
-
-    const shipWidth = 76;
-
-    const max =
-        width -
-        shipWidth -
-        35;
-
-
-    const position =
-        20 +
-        (max - 20) *
-        ai.progress;
-
-
-    ai.element.style.left =
-        `${position}px`;
-
-}
-
-
-/* =====================================================
-   AI WIN CHECK
-===================================================== */
-
-function checkAIWin(ai) {
-
-    if (raceFinished) {
+    if (!space) {
         return;
     }
 
 
-    finishRace(false);
+    const maximum =
+        space.clientWidth - 130;
 
+
+    ships.forEach((ship, index) => {
+
+        const ai =
+            game.race.ai[index];
+
+
+        if (!ai) {
+            return;
+        }
+
+
+        ship.style.left =
+            `${20 + maximum * ai.progress}px`;
+
+
+        const label =
+            ship.querySelector(
+                ".racer-label"
+            );
+
+
+        if (label) {
+            label.textContent =
+                ai.name;
+        }
+
+    });
 }
 
 
-/* =====================================================
-   FINISH RACE
-===================================================== */
+/* =========================================================
+   CALCULATE POSITION
+========================================================= */
 
-function finishRace(playerWon) {
-
-    if (raceFinished) {
-        return;
-    }
-
-
-    raceFinished = true;
-
-    raceStarted = false;
-
-
-    clearInterval(
-        raceTimer
-    );
-
-
-    cancelAnimationFrame(
-        aiTimer
-    );
-
-
-    typingInput.disabled =
-        true;
-
+function calculatePosition() {
 
     const playerProgress =
-        currentIndex /
-        currentText.length;
+        game.race.typed.length /
+        game.race.text.length;
+
+
+    let position = 1;
+
+
+    game.race.ai.forEach(ai => {
+
+        if (
+            ai.progress >
+            playerProgress
+        ) {
+
+            position++;
+
+        }
+
+    });
+
+
+    game.race.position =
+        position;
 
 
     /*
-        Freeze everyone and calculate
-        the final ranking.
+       This means the player can actually
+       finish 2nd, 3rd, 4th or 5th.
     */
 
-    const racers = [];
+    setText(
+        "racePosition",
+        "#" + position
+    );
+}
 
 
-    racers.push({
+/* =========================================================
+   FINISH RACE
+========================================================= */
 
-        name: "YOU",
+function finishRace() {
 
-        wpm:
-            getPlayerWPM(),
+    if (!game.race.active) {
+        return;
+    }
 
-        progress:
-            playerProgress,
 
-        player: true
+    game.race.active = false;
+
+    game.race.finished = true;
+
+    game.race.endTime =
+        performance.now();
+
+
+    calculateTypingStats();
+
+    calculatePosition();
+
+
+    game.player.races++;
+
+
+    if (
+        game.race.position === 1
+    ) {
+
+        game.player.wins++;
+
+    }
+
+
+    if (
+        game.race.wpm >
+        game.player.bestWPM
+    ) {
+
+        game.player.bestWPM =
+            game.race.wpm;
+
+    }
+
+
+    showResults();
+
+
+    /*
+       Part 5 will add the full results,
+       shop, leagues, teams and saving.
+    */
+}
+
+/* =========================================================
+   STARSPRINT
+   JS PART 5/5
+   RESULTS + PLAYER UI
+========================================================= */
+
+
+/* =========================================================
+   SHOW RESULTS
+========================================================= */
+
+function showResults() {
+
+    showScreen("resultsScreen");
+
+
+    setText(
+        "resultPosition",
+        "#" + game.race.position
+    );
+
+
+    setText(
+        "resultWPM",
+        game.race.wpm
+    );
+
+
+    setText(
+        "resultAccuracy",
+        game.race.accuracy + "%"
+    );
+
+
+    updatePlayerDisplay();
+}
+
+
+/* =========================================================
+   PLAYER DISPLAY
+========================================================= */
+
+function updatePlayerDisplay() {
+
+    document.querySelectorAll(
+        "[data-player-name]"
+    ).forEach(element => {
+
+        element.textContent =
+            game.player.name;
 
     });
 
 
-    aiRacers.forEach(ai => {
+    document.querySelectorAll(
+        "[data-credits]"
+    ).forEach(element => {
 
-        racers.push({
-
-            name: ai.name,
-
-            wpm: ai.wpm,
-
-            progress: ai.progress,
-
-            player: false
-
-        });
+        element.textContent =
+            game.player.credits;
 
     });
 
 
-    racers.sort(
-        (a, b) =>
-            b.progress -
-            a.progress
-    );
+    document.querySelectorAll(
+        "[data-wpm]"
+    ).forEach(element => {
+
+        element.textContent =
+            game.player.bestWPM;
+
+    });
 
 
-    showResults(
-        racers,
-        playerWon
-    );
+    document.querySelectorAll(
+        "[data-wins]"
+    ).forEach(element => {
 
+        element.textContent =
+            game.player.wins;
+
+    });
+
+
+    document.querySelectorAll(
+        "[data-races]"
+    ).forEach(element => {
+
+        element.textContent =
+            game.player.races;
+
+    });
 }
 
 
-/* =====================================================
-   RESULTS
-===================================================== */
+/* =========================================================
+   START RACE BUTTONS
+========================================================= */
 
-function showResults(
-    racers,
-    playerWon
-) {
+function setupStartButtons() {
 
-    const playerPosition =
-        racers.findIndex(
-            racer =>
-                racer.player
-        ) + 1;
+    document.querySelectorAll(
+        "[data-start-race]"
+    ).forEach(button => {
 
+        button.addEventListener(
+            "click",
+            startRace
+        );
 
-    if (playerWon) {
-
-        resultTitle.textContent =
-            "VICTORY";
-
-        resultIcon.textContent =
-            "★";
-
-    }
-
-    else {
-
-        resultTitle.textContent =
-            `POSITION ${playerPosition}`;
-
-        resultIcon.textContent =
-            "✦";
-
-    }
-
-
-    leaderboard.innerHTML = "";
-
-
-    racers.forEach(
-        (racer, index) => {
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-
-            row.className =
-                "result-row";
-
-
-            if (racer.player) {
-
-                row.classList.add(
-                    "player"
-                );
-
-            }
-
-
-            row.innerHTML = `
-
-                <div class="result-position">
-                    ${index + 1}
-                </div>
-
-                <div class="result-name">
-                    ${racer.name}
-                </div>
-
-                <div class="result-wpm">
-                    ${racer.player
-                        ? racer.wpm
-                        : racer.wpm} WPM
-                </div>
-
-            `;
-
-
-            leaderboard.appendChild(
-                row
-            );
-
-        }
-    );
-
-
-    const wpm =
-        getPlayerWPM();
-
-
-    const accuracy =
-        getPlayerAccuracy();
-
-
-    const sector =
-        sectors[selectedSector];
-
-
-    let reward = 0;
-
-
-    if (playerPosition === 1) {
-
-        reward =
-            sector.reward;
-
-    }
-
-    else if (
-        playerPosition === 2
-    ) {
-
-        reward =
-            Math.round(
-                sector.reward * 0.65
-            );
-
-    }
-
-    else if (
-        playerPosition === 3
-    ) {
-
-        reward =
-            Math.round(
-                sector.reward * 0.4
-            );
-
-    }
-
-
-    finalWpm.textContent =
-        wpm;
-
-
-    finalAccuracy.textContent =
-        `${accuracy}%`;
-
-
-    finalReward.textContent =
-        `${reward} CR`;
-
-
-    resultsScreen.classList.remove(
-        "hidden"
-    );
-
+    });
 }
 
 
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-againButton.addEventListener(
-    "click",
-    () => {
-
-        resultsScreen.classList.add(
-            "hidden"
-        );
-
-        startRace();
-
-    }
-);
-
-
-mapButton.addEventListener(
-    "click",
-    () => {
-
-        resultsScreen.classList.add(
-            "hidden"
-        );
-
-        raceScreen.classList.add(
-            "hidden"
-        );
-
-        headerStats.classList.add(
-            "hidden"
-        );
-
-        galaxyScreen.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-/* =====================================================
-   CLICK TO FOCUS
-===================================================== */
+/* =========================================================
+   KEYBOARD SHORTCUT
+========================================================= */
 
 document.addEventListener(
-    "click",
-    () => {
+    "keydown",
+    event => {
 
         if (
-            raceStarted &&
-            !raceFinished &&
-            !typingInput.disabled
+            event.code === "Space" &&
+            game.currentScreen ===
+            "raceSelectScreen"
         ) {
 
-            typingInput.focus();
+            event.preventDefault();
+
+            startRace();
 
         }
 
@@ -1625,8 +1176,19 @@ document.addEventListener(
 );
 
 
-/* =====================================================
-   INITIALIZE
-===================================================== */
+/* =========================================================
+   ADDITIONAL INITIALISATION
+========================================================= */
 
-updateSectorInfo();
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        setupTyping();
+
+        setupStartButtons();
+
+        updatePlayerDisplay();
+
+    }
+);
