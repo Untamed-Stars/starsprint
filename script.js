@@ -6,19 +6,29 @@
 
 const game = {
     player: {
-        name: "PILOT",
-        credits: 1250,
+    name: "PILOT",
 
-        races: 0,
-        wins: 0,
-        bestWPM: 0,
-        averageWPM: 0,
-        accuracy: 100,
+    credits: 1250,
 
-        ship: "starter",
-        league: "Bronze",
-        team: null
-    },
+    races: 0,
+    wins: 0,
+
+    bestWPM: 0,
+    averageWPM: 0,
+    accuracy: 100,
+
+    xp: 0,
+
+    ship: "starter",
+
+    ownedShips: [
+        "starter"
+    ],
+
+    rating: 0,
+
+    team: "STARFORGE"
+},
 
     currentScreen: "homeScreen",
 
@@ -46,6 +56,48 @@ const game = {
     }
 };
 
+/* =========================================================
+   SAVE SYSTEM
+========================================================= */
+
+const SAVE_KEY = "starsprint_save_v1";
+
+
+function saveGame() {
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(game.player)
+    );
+
+}
+
+
+function loadGame() {
+
+    const saved =
+        localStorage.getItem(SAVE_KEY);
+
+    if (!saved) {
+        return;
+    }
+
+    try {
+
+        game.player = {
+            ...game.player,
+            ...JSON.parse(saved)
+        };
+
+    } catch (error) {
+
+        console.error(
+            "Could not load StarSprint save:",
+            error
+        );
+
+    }
+}
 
 /* =========================================================
    RACE TEXT
@@ -99,6 +151,32 @@ function showScreen(id) {
     game.currentScreen = id;
 }
 
+/* =========================================================
+   XP AND LEVELS
+========================================================= */
+
+function getLevel() {
+
+    return Math.floor(
+        game.player.xp / 500
+    ) + 1;
+
+}
+
+
+function getLevelXP() {
+
+    return game.player.xp % 500;
+
+}
+
+
+function getXPForNextLevel() {
+
+    return 500;
+
+}
+
 
 /* =========================================================
    NAVIGATION
@@ -129,12 +207,12 @@ function goShop() {
 
 
 function goLeagues() {
-    showScreen("leaguesScreen");
+    showScreen("leagueScreen");
 }
 
 
 function goTeams() {
-    showScreen("teamsScreen");
+    showScreen("teamScreen");
 }
 
 
@@ -207,8 +285,13 @@ function setText(id, value) {
 ========================================================= */
 
 function initGame() {
+
+    loadGame();
+
     setupNavigation();
     setupSectors();
+    setupTyping();
+    setupStartButtons();
 
     showScreen("homeScreen");
 
@@ -272,7 +355,8 @@ function startRace() {
 
     createAI();
 
-
+    createRaceLanes();
+   
     runCountdown();
 }
 
@@ -340,9 +424,14 @@ function beginRace() {
 
 
     if (input) {
-        input.value = "";
-        input.focus();
-    }
+
+    input.value = "";
+
+    input.disabled = false;
+
+    input.focus();
+
+}
 
 
     startAI();
@@ -412,6 +501,94 @@ function createAI() {
     }
 }
 
+function createRaceLanes() {
+
+    const lanes =
+        document.getElementById(
+            "raceLanes"
+        );
+
+
+    if (!lanes) {
+        return;
+    }
+
+
+    lanes.innerHTML = "";
+
+
+    /* PLAYER */
+
+    const playerLane =
+        document.createElement("div");
+
+    playerLane.className =
+        "race-lane";
+
+
+    playerLane.innerHTML = `
+
+        <div
+            class="racer-ship player"
+            style="left:20px"
+        >
+
+            <span class="racer-label">
+                ${escapeHTML(game.player.name)}
+            </span>
+
+            <span class="ship-icon">
+                🚀
+            </span>
+
+        </div>
+
+    `;
+
+
+    lanes.appendChild(
+        playerLane
+    );
+
+
+    /* AI */
+
+    game.race.ai.forEach(ai => {
+
+        const lane =
+            document.createElement("div");
+
+
+        lane.className =
+            "race-lane";
+
+
+        lane.innerHTML = `
+
+            <div
+                class="racer-ship ai"
+                style="left:20px"
+            >
+
+                <span class="racer-label">
+                    ${escapeHTML(ai.name)}
+                </span>
+
+                <span class="ship-icon">
+                    🚀
+                </span>
+
+            </div>
+
+        `;
+
+
+        lanes.appendChild(
+            lane
+        );
+
+    });
+}
 
 /* =========================================================
    RANDOM NUMBER
@@ -660,7 +837,7 @@ function updateRaceStats() {
 
 
     setText(
-        "raceWPM",
+        "raceWpm",
         game.race.wpm
     );
 
@@ -1026,10 +1203,49 @@ function finishRace() {
         game.player.bestWPM =
             game.race.wpm;
 
-    }
+       const input =
+       document.getElementById(
+        "typingInput"
+       );
+
+       if (input) {
+       input.disabled = true;
+       }
+}
+
+   let reward = 0;
+
+   if (game.race.position === 1) {
+    reward = 200;
+   }
+   else if (game.race.position === 2) {
+    reward = 150;
+   }
+   else if (game.race.position === 3) {
+    reward = 120;
+   }
+   else if (game.race.position === 4) {
+    reward = 100;
+   }
+   else {
+    reward = 80;
+   }
+
+   const xpReward =
+    100 + (
+        (5 - game.race.position) * 25
+    );
+
+game.player.xp += xpReward;
 
 
-    showResults();
+game.player.credits += reward;
+
+    saveGame();
+
+    updatePlayerDisplay();
+   
+    showResults(reward);
 
 
     /*
@@ -1049,30 +1265,127 @@ function finishRace() {
    SHOW RESULTS
 ========================================================= */
 
-function showResults() {
+function showResults(reward) {
 
     showScreen("resultsScreen");
 
 
     setText(
-        "resultPosition",
-        "#" + game.race.position
-    );
-
-
-    setText(
-        "resultWPM",
+        "finalWpm",
         game.race.wpm
     );
 
 
     setText(
-        "resultAccuracy",
+        "finalAccuracy",
         game.race.accuracy + "%"
     );
 
 
-    updatePlayerDisplay();
+    setText(
+        "finalReward",
+        "+" + reward + " CR"
+    );
+
+
+    const title =
+        document.getElementById("resultsTitle");
+
+
+    if (title) {
+
+        title.textContent =
+            game.race.position === 1
+                ? "VICTORY"
+                : "RACE COMPLETE";
+
+    }
+
+
+    const list =
+        document.getElementById("resultsList");
+
+
+    if (!list) {
+        return;
+    }
+
+
+    const racers = [
+
+        {
+            name: game.player.name,
+            progress: 1,
+            player: true
+        },
+
+        ...game.race.ai.map(ai => ({
+
+            name: ai.name,
+
+            progress: ai.progress,
+
+            player: false
+
+        }))
+
+    ];
+
+
+    racers.sort(
+        (a, b) =>
+            b.progress - a.progress
+    );
+
+
+    list.innerHTML = "";
+
+
+    racers.forEach(
+        (racer, index) => {
+
+            const row =
+                document.createElement("div");
+
+
+            row.className =
+                "result-row";
+
+
+            if (racer.player) {
+
+                row.classList.add(
+                    "player-result"
+                );
+
+            }
+
+
+            row.innerHTML = `
+
+                <span>
+                    #${index + 1}
+                </span>
+
+                <strong>
+                    ${escapeHTML(racer.name)}
+                </strong>
+
+                <span>
+                    ${
+                        racer.player
+                            ? game.race.wpm + " WPM"
+                            : "AI"
+                    }
+                </span>
+
+            `;
+
+
+            list.appendChild(row);
+
+        }
+    );
 }
 
 
@@ -1171,24 +1484,6 @@ document.addEventListener(
             startRace();
 
         }
-
-    }
-);
-
-
-/* =========================================================
-   ADDITIONAL INITIALISATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        setupTyping();
-
-        setupStartButtons();
-
-        updatePlayerDisplay();
 
     }
 );
